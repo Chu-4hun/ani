@@ -1,4 +1,5 @@
-mod auth;
+pub mod auth;
+pub mod models;
 
 use actix_web::{
     dev::ServiceRequest,
@@ -12,7 +13,8 @@ use actix_web_httpauth::{
     },
     middleware::HttpAuthentication,
 };
-use auth::{basic_auth, create_user};
+
+use auth::{create_user, root, basic_auth};
 use dotenv::dotenv;
 use hmac::{Hmac, Mac};
 use jwt::VerifyWithKey;
@@ -70,19 +72,16 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let bearer_middleware = HttpAuthentication::bearer(validator);
-        App::new().service(
-            web::scope("/users")
+        App::new()
+        // .service(
+            // web::scope("api/v1/")
                 .app_data(Data::new(AppState { db: pool.clone() }))
                 .service(basic_auth)
                 .service(create_user)
-                .service(
-                    web::scope("")
-                        .wrap(bearer_middleware)
-                        // .service(create_article),
-                ),
-        )
+                .service(root)
+        // )
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 80))?
     .run()
     .await
 }

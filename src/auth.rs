@@ -1,32 +1,21 @@
 use crate::{AppState, TokenClaims};
 use actix_web::{
     get, post,
-    web::{Data, Json, ReqData},
+    web::{Data, Json},
     HttpResponse, Responder,
 };
 use actix_web_httpauth::extractors::basic::BasicAuth;
-use chrono::NaiveDateTime;
 use hmac::{Hmac, Mac};
 use jwt::SignWithKey;
-use serde::{Deserialize, Serialize};
 use sha2::Sha256;
-use sqlx::{self, FromRow};
+use sqlx;
 
 use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        PasswordHash, PasswordHasher, PasswordVerifier, SaltString
-    },
-    Argon2
+    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
 };
 
-#[derive(Serialize, Deserialize,FromRow,)]
-struct User {
-    id: i32,
-    user_name: String,
-    pass: String,
-    email: String,
-}
+use crate::models::user::*;
 
 #[post("/user")]
 async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder {
@@ -37,18 +26,23 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
         .to_string();
 
     match sqlx::query_as::<_, User>(
-        "INSERT INTO users (user_name, pass)
-        VALUES ($1, $2)
-        RETURNING id, user_name",
+        "INSERT INTO users (user_name, pass, email)
+        VALUES ($1, $2, $3)
+        RETURNING user_id, user_name",
     )
     .bind(user.user_name)
     .bind(hash)
+    .bind(user.email)
     .fetch_one(&state.db)
     .await
     {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
     }
+}
+#[get("/")]
+async fn root() -> HttpResponse {
+    HttpResponse::Ok().body("hi")
 }
 
 #[get("/auth")]
@@ -65,8 +59,8 @@ async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Respo
     match pass {
         None => HttpResponse::Unauthorized().json("Must provide user_name and password"),
         Some(pass) => {
-            match sqlx::query_as::<_, User>(
-                "SELECT id, user_name, pass FROM users WHERE user_name = $1",
+            match sqlx::query_as::<_, DbUser>(
+                "SELECT user_id, user_name, pass FROM users WHERE user_name = $1",
             )
             .bind(user_name.to_string())
             .fetch_one(&state.db)
@@ -74,7 +68,9 @@ async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Respo
             {
                 Ok(user) => {
                     let parsed_hash = PasswordHash::new(&user.pass).unwrap();
-                    let is_valid =  Argon2::default().verify_password(pass.as_bytes(), &parsed_hash).is_ok();
+                    let is_valid = Argon2::default()
+                        .verify_password(pass.as_bytes(), &parsed_hash)
+                        .is_ok();
                     if is_valid {
                         let claims = TokenClaims { id: user.id };
                         let token_str = claims.sign_with_key(&jwt_secret).unwrap();
