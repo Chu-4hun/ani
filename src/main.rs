@@ -14,7 +14,7 @@ use actix_web_httpauth::{
     middleware::HttpAuthentication,
 };
 
-use auth::{create_user, root, basic_auth};
+use auth::{basic_auth, create_user, root};
 use dotenv::dotenv;
 use hmac::{Hmac, Mac};
 use jwt::VerifyWithKey;
@@ -53,7 +53,6 @@ async fn validator(
                 .cloned()
                 .unwrap_or_default()
                 .scope("");
-
             Err((AuthenticationError::from(config).into(), req))
         }
     }
@@ -73,13 +72,18 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         let bearer_middleware = HttpAuthentication::bearer(validator);
         App::new()
-        // .service(
-            // web::scope("api/v1/")
-                .app_data(Data::new(AppState { db: pool.clone() }))
-                .service(basic_auth)
-                .service(create_user)
-                .service(root)
-        // )
+            .service(
+                web::scope("api/v1/auth")
+                    .app_data(Data::new(AppState { db: pool.clone() }))
+                    .service(basic_auth)
+                    .service(create_user),
+            )
+            .service(
+                web::scope("api/v1")
+                    .app_data(Data::new(AppState { db: pool.clone() }))
+                    .wrap(bearer_middleware) // .service(create_article),
+                    .service(root),
+            )
     })
     .bind(("0.0.0.0", 80))?
     .run()

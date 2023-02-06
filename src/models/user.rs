@@ -1,19 +1,25 @@
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
-use sqlx_crud::SqlxCrud;
 
 #[derive(Serialize, Deserialize, FromRow,)]
 pub struct User {
     pub user_name: String,
-    pub pass: String,
+    pub password: String,
     pub email: String,
 }
 
 
-#[derive(Serialize, Deserialize,FromRow,SqlxCrud)]
-pub struct DbUser {
-    pub id: i32,
+#[derive(Serialize, Deserialize, FromRow,)]
+pub struct UserNoPassword {
+    pub user_id: i32,
     pub user_name: String,
-    pub pass: String,
+}
+
+
+#[derive(Serialize, Deserialize,FromRow)]
+pub struct DbUser {
+    pub user_id: i32,
+    pub user_name: String,
+    pub password: String,
     pub email: String,
 }
