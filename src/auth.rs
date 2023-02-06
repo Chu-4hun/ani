@@ -8,7 +8,7 @@ use actix_web_httpauth::extractors::basic::BasicAuth;
 use hmac::{Hmac, Mac};
 use jwt::SignWithKey;
 use sha2::Sha256;
-use sqlx::{self, error::DatabaseError};
+use sqlx;
 
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
