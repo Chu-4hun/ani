@@ -17,7 +17,7 @@ use argon2::{
 
 use crate::models::user::*;
 
-#[post("/user")]
+#[post("/register")]
 async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder {
     let user: User = body.into_inner();
     let hash = Argon2::default()
@@ -55,7 +55,7 @@ async fn root() -> HttpResponse {
     HttpResponse::Ok().body("hi")
 }
 
-#[get("/auth")]
+#[get("/login")]
 async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Responder {
     let jwt_secret: Hmac<Sha256> = Hmac::new_from_slice(
         std::env::var("JWT_SECRET")
