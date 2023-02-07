@@ -4,7 +4,7 @@ use jwt::SignWithKey;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub enum TokenType {
     Refresh,
     Access,
