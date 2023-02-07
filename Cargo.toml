@@ -10,7 +10,7 @@ dotenv = "0.15.0"
 chrono = { version = "0.4.22", features = ["serde"] }
 serde = { version = "1.0.145", features = ["derive"] }
 serde_json = "1.0.86"
-sqlx = { version = "^0.6.2", features = ["postgres", "runtime-actix-native-tls", "chrono", "json", "macros","bigdecimal"] }
+sqlx = { version = "^0.6.2", features = ["postgres", "runtime-actix-rustls", "chrono", "json", "macros","bigdecimal"] }
 
 actix-web-httpauth = "0.8.0"
 jwt = "0.16.0"

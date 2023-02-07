@@ -1,5 +1,6 @@
 pub mod auth;
 pub mod models;
+pub mod token;
 
 use actix_web::{
     dev::ServiceRequest,
@@ -17,15 +18,12 @@ use actix_web_httpauth::{
 use auth::{basic_auth, create_user, root};
 use dotenv::dotenv;
 use hmac::{Hmac, Mac};
-use jwt::VerifyWithKey;
-use serde::{Deserialize, Serialize};
+use jwt::{VerifyWithKey};
 use sha2::Sha256;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use token::TokenClaims;
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct TokenClaims {
-    id: i32,
-}
+
 pub struct AppState {
     db: Pool<Postgres>,
 }
@@ -85,7 +83,7 @@ async fn main() -> std::io::Result<()> {
                     .service(root),
             )
     })
-    .bind(("0.0.0.0", 80))?
+    .bind(("0.0.0.0", 8090))?
     .run()
     .await
 }

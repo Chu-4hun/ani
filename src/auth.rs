@@ -1,21 +1,21 @@
-use crate::{AppState, TokenClaims};
+use crate::{
+    token::{TokenClaims},
+    AppState,
+};
 use actix_web::{
     get, post,
     web::{Data, Json},
     HttpResponse, Responder,
 };
 use actix_web_httpauth::extractors::basic::BasicAuth;
-use hmac::{Hmac, Mac};
-use jwt::SignWithKey;
-use sha2::Sha256;
+
 use sqlx;
+use crate::models::user::*;
 
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
-
-use crate::models::user::*;
 
 #[post("/register")]
 async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder {
@@ -41,7 +41,12 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
         Ok(user) => HttpResponse::Ok().json(user),
         Err(error) => match error {
             sqlx::Error::Database(error) => {
-                match error.downcast_ref::<sqlx::postgres::PgDatabaseError>().code() =="23505" { // AAAAAA 1.5 hours to downcast_ref::<sqlx::postgres::PgDatabaseError>
+                match error
+                    .downcast_ref::<sqlx::postgres::PgDatabaseError>()
+                    .code()
+                    == "23505"
+                {
+                    // AAAAAA 1.5 hours to downcast_ref::<sqlx::postgres::PgDatabaseError>
                     true => HttpResponse::BadRequest().json("User already exists"),
                     false => HttpResponse::InternalServerError().json(format!("{:?}", error)),
                 }
@@ -57,12 +62,7 @@ async fn root() -> HttpResponse {
 
 #[get("/login")]
 async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Responder {
-    let jwt_secret: Hmac<Sha256> = Hmac::new_from_slice(
-        std::env::var("JWT_SECRET")
-            .expect("JWT_SECRET must be set!")
-            .as_bytes(),
-    )
-    .unwrap();
+    
     let user_name = credentials.user_id();
     let pass = credentials.password();
 
@@ -82,9 +82,7 @@ async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Respo
                         .verify_password(pass.as_bytes(), &parsed_hash)
                         .is_ok();
                     if is_valid {
-                        let claims = TokenClaims { id: user.user_id };
-                        let token_str = claims.sign_with_key(&jwt_secret).unwrap();
-                        HttpResponse::Ok().json(token_str)
+                        HttpResponse::Ok().json(TokenClaims::generate_access(user.user_id))
                     } else {
                         HttpResponse::Unauthorized().json("Incorrect user_name or password")
                     }
