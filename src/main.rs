@@ -2,29 +2,19 @@ pub mod auth;
 pub mod models;
 pub mod token;
 mod validators;
-use chrono::{Duration, Utc};
 
 use actix_web::{
-    dev::ServiceRequest,
     web::{self, Data},
-    App, Error, HttpMessage, HttpServer, HttpResponse,
+    App, HttpServer,
 };
 use actix_web_httpauth::{
-    extractors::{
-        bearer::{self, BearerAuth},
-        AuthenticationError,
-    },
     middleware::HttpAuthentication,
 };
 
 use auth::{basic_auth, create_user, root};
 use dotenv::dotenv;
-
-use jwt::VerifyWithKey;
-use sha2::Sha256;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-use token::TokenClaims;
-use validators::{validator, validator_refresh, validator_acces};
+use validators::{ validator_refresh, validator_acces};
 
 pub struct AppState {
     db: Pool<Postgres>,

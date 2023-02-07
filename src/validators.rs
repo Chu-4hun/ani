@@ -23,7 +23,7 @@ pub async fn validator_acces(
     validator(req, credentials, TokenType::Access).await
 }
 
-pub async fn validator(
+async fn validator(
     req: ServiceRequest,
     credentials: BearerAuth,
     token_type: TokenType,
