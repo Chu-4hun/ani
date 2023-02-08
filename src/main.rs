@@ -1,4 +1,4 @@
-pub mod auth;
+pub mod controllers;
 pub mod models;
 pub mod token;
 mod validators;
@@ -10,8 +10,7 @@ use actix_web::{
 use actix_web_httpauth::{
     middleware::HttpAuthentication,
 };
-
-use auth::{basic_auth, create_user, root};
+use controllers::auth::{basic_auth, create_user, root};
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use validators::{ validator_refresh, validator_acces};
