@@ -47,7 +47,7 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
                     == "23505"
                 {
                     // AAAAAA 1.5 hours to downcast_ref::<sqlx::postgres::PgDatabaseError>
-                    true => HttpResponse::BadRequest().json("User already exists"),
+                    true => HttpResponse::BadRequest().json("username or email already claimed"),
                     false => HttpResponse::InternalServerError().json(format!("{:?}", error)),
                 }
             }
