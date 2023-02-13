@@ -1,6 +1,6 @@
 use chrono::{Duration, Utc};
 use hmac::{Hmac, Mac};
-use jwt::SignWithKey;
+use jwt::{SignWithKey, VerifyWithKey};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 
@@ -14,7 +14,7 @@ pub enum TokenType {
 pub struct TokenClaims {
     pub id: i32,
     pub token_type: TokenType,
-    pub exp_date: usize,
+    pub exp: usize,
 }
 
 impl TokenClaims {
@@ -36,11 +36,19 @@ impl TokenClaims {
         let claims = TokenClaims {
             id: user_id,
             token_type: token_type.clone(),
-            exp_date: match token_type {
+            exp: match token_type {
                 TokenType::Access => (Utc::now() + Duration::minutes(5)).timestamp() as usize,
                 TokenType::Refresh => (Utc::now() + Duration::days(30)).timestamp() as usize,
             },
         };
         claims.sign_with_key(&jwt_secret).unwrap()
+    }
+    pub fn get_token_claims(token_string: &str) -> Result<TokenClaims, &str> {
+        let jwt_secret: String = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set!");
+        let key: Hmac<Sha256> = Hmac::new_from_slice(jwt_secret.as_bytes()).unwrap();
+
+        token_string
+            .verify_with_key(&key)
+            .map_err(|_| "Invalid token")
     }
 }

@@ -1,7 +1,4 @@
-use crate::{
-    token::{TokenClaims},
-    AppState,
-};
+use crate::{token::TokenClaims, AppState};
 use actix_web::{
     get, post,
     web::{Data, Json},
@@ -9,8 +6,8 @@ use actix_web::{
 };
 use actix_web_httpauth::extractors::basic::BasicAuth;
 
-use sqlx;
 use crate::models::user::*;
+use sqlx;
 
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
@@ -25,6 +22,7 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
         .unwrap()
         .to_string();
 
+    //TODO move this user model
     match sqlx::query_as::<_, UserNoPassword>(
         "
         INSERT INTO users (user_name, password, email)
@@ -56,39 +54,30 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
     }
 }
 #[get("/")]
-async fn root() -> HttpResponse {
+async fn generate_access() -> HttpResponse {
     HttpResponse::Ok().body("hi")
 }
 
 #[get("/login")]
 async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Responder {
-    
     let user_name = credentials.user_id();
     let pass = credentials.password();
 
     match pass {
         None => HttpResponse::Unauthorized().json("Must provide user_name and password"),
-        Some(pass) => {
-            match sqlx::query_as::<_, DbUser>(
-                "SELECT user_id, user_name,email, password FROM users WHERE user_name = $1",
-            )
-            .bind(user_name.to_string())
-            .fetch_one(&state.db)
-            .await
-            {
-                Ok(user) => {
-                    let parsed_hash = PasswordHash::new(&user.password).unwrap();
-                    let is_valid = Argon2::default()
-                        .verify_password(pass.as_bytes(), &parsed_hash)
-                        .is_ok();
-                    if is_valid {
-                        HttpResponse::Ok().json(TokenClaims::generate_access(user.user_id))
-                    } else {
-                        HttpResponse::Unauthorized().json("Incorrect user_name or password")
-                    }
+        Some(pass) => match get_user_by_name(user_name, state).await {
+            Ok(user) => {
+                let parsed_hash = PasswordHash::new(&user.password).unwrap();
+                let is_valid = Argon2::default()
+                    .verify_password(pass.as_bytes(), &parsed_hash)
+                    .is_ok();
+                if is_valid {
+                    HttpResponse::Ok().json(TokenClaims::generate_refresh(user.user_id))
+                } else {
+                    HttpResponse::Unauthorized().json("Incorrect user_name or password")
                 }
-                Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
             }
-        }
+            Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
+        },
     }
 }

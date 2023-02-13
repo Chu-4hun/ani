@@ -7,17 +7,16 @@ use actix_web::{
     web::{self, Data},
     App, HttpServer,
 };
-use actix_web_httpauth::{
-    middleware::HttpAuthentication,
-};
-use controllers::auth::{basic_auth, create_user, root};
+use actix_web_httpauth::middleware::HttpAuthentication;
+use controllers::auth::{basic_auth, create_user, generate_access};
+use controllers::user_interactions::send_friend_request;
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-use validators::{ validator_refresh, validator_acces};
+use validators::{validator_acces, validator_refresh};
 
-pub struct AppState { db: Pool<Postgres>,}
-
-
+pub struct AppState {
+    db: Pool<Postgres>,
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -33,19 +32,21 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         let bearer_middleware_refresh = HttpAuthentication::bearer(validator_refresh);
         let bearer_middleware_access = HttpAuthentication::bearer(validator_acces);
-        App::new()
-            .service(
-                web::scope("api/v1/auth")
-                    .app_data(Data::new(AppState { db: pool.clone() }))
-                    .service(basic_auth)
-                    .service(create_user),
-            )
-            .service(
-                web::scope("api/v1")
-                    .app_data(Data::new(AppState { db: pool.clone() }))
-                    .wrap(bearer_middleware_access) // .service(create_article),
-                    .service(root),
-            )
+        App::new().service(
+            web::scope("api/v1")
+                .app_data(Data::new(AppState { db: pool.clone() }))
+                .service(web::scope("/auth").service(basic_auth).service(create_user))
+                .service(
+                    web::scope("/access")
+                        .wrap(bearer_middleware_refresh)
+                        .service(generate_access),
+                )
+                .service(
+                    web::scope("/interact")
+                        .wrap(bearer_middleware_access)
+                        .service(send_friend_request),
+                ),
+        )
     })
     .bind(("0.0.0.0", 8090))?
     .run()

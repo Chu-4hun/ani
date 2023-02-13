@@ -4,9 +4,6 @@ use actix_web_httpauth::extractors::{
     AuthenticationError,
 };
 use chrono::Utc;
-use hmac::{Hmac, Mac};
-use jwt::VerifyWithKey;
-use sha2::Sha256;
 
 use crate::token::{TokenClaims, TokenType};
 
@@ -28,15 +25,7 @@ async fn validator(
     credentials: BearerAuth,
     token_type: TokenType,
 ) -> Result<ServiceRequest, (Error, ServiceRequest)> {
-    let jwt_secret: String = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set!");
-    let key: Hmac<Sha256> = Hmac::new_from_slice(jwt_secret.as_bytes()).unwrap();
-    let token_string = credentials.token();
-
-    let claims: Result<TokenClaims, &str> = token_string
-        .verify_with_key(&key)
-        .map_err(|_| "Invalid token");
-
-    match claims {
+    match TokenClaims::get_token_claims(credentials.token()) {
         Ok(value) => {
             if value.token_type != token_type {
                 return Err((
@@ -44,7 +33,8 @@ async fn validator(
                     req,
                 ));
             }
-            if value.exp_date < Utc::now().timestamp() as usize {
+
+            if value.exp < Utc::now().timestamp() as usize {
                 return Err((
                     AuthenticationError::from(bearer::Config::default()).into(),
                     req,
