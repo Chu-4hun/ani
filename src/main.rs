@@ -15,9 +15,7 @@ use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use validators::{ validator_refresh, validator_acces};
 
-pub struct AppState {
-    db: Pool<Postgres>,
-}
+pub struct AppState { db: Pool<Postgres>,}
 
 
 
