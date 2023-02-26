@@ -36,4 +36,17 @@ impl FriendRequest {
         .fetch_one(&state.db)
         .await
     }
+    pub async fn get_friend_requests(from_user: DbUser, state: &Data<AppState>) -> Result<FriendRequest, sqlx::Error> {
+         sqlx::query_as::<_, FriendRequest>(
+            "
+        SELECT INTO user_friend_requests (usr, friend, request_status)
+        VALUES ($1, $2, $3)
+        RETURNING *;
+        ",
+        )
+        .bind(from_user.user_id)
+        .bind(1)
+        .fetch_one(&state.db)
+        .await
+    }
 }

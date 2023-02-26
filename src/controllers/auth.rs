@@ -4,7 +4,7 @@ use actix_web::{
     web::{Data, Json},
     HttpResponse, Responder,
 };
-use actix_web_httpauth::extractors::basic::BasicAuth;
+use actix_web_httpauth::extractors::{basic::BasicAuth, bearer::BearerAuth};
 
 use crate::models::user::*;
 use sqlx;
@@ -53,9 +53,10 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
         },
     }
 }
-#[get("/")]
-async fn generate_access() -> HttpResponse {
-    HttpResponse::Ok().body("hi")
+#[get("/access")]
+async fn generate_access(credentials: BearerAuth,) -> HttpResponse {
+    let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
+    HttpResponse::Ok().json(TokenClaims::generate_access(calims.id))
 }
 
 #[get("/login")]

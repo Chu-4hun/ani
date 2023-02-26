@@ -29,3 +29,17 @@ pub async fn send_friend_request(
     };
     HttpResponse::Accepted().json(calims.id)
 }
+
+#[get("/friend/show")]
+pub async fn get_friend_requests(
+    state: Data<AppState>,
+    credentials: BearerAuth,
+) -> impl Responder {
+    let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
+    let sender = get_user_by_id(calims.id, &state).await.unwrap();
+
+    match FriendRequest::get_friend_requests(sender, &state).await {
+        Ok(requests) => HttpResponse::Accepted().json(requests),
+        Err(_) => HttpResponse::BadRequest().body("wrong user id"),
+    }
+}

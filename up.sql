@@ -21,7 +21,6 @@ CREATE TABLE users (
 
 CREATE TABLE bookmark (
   user_fk integer NOT NULL,
-  type varchar(30) NOT NULL,
   bookmark_name varchar(50) NOT NULL,
   bookmark_id integer NOT NULL,
   release_FK integer NOT NULL,
@@ -52,15 +51,14 @@ CREATE TABLE review (
 );
 
 CREATE TABLE user_friend_requests (
-  request_id integer NOT NULL,
+  friend_id serial NOT NULL,
   usr integer NOT NULL,
   friend integer NOT NULL,
   request_status integer NOT NULL,
-  PRIMARY KEY (request_id),
+  PRIMARY KEY (friend_id),
   CONSTRAINT user_friends_user_user_user_id_foreign FOREIGN KEY (usr) REFERENCES users (user_id),
   CONSTRAINT user_friends_friend_user_user_id_foreign FOREIGN KEY (friend) REFERENCES users (user_id)
 );
-
 CREATE TABLE user_info (
   user_FK integer NOT NULL,
   avatar varchar(255) NOT NULL,
@@ -70,10 +68,10 @@ CREATE TABLE user_info (
 );
 
 CREATE TABLE history (
+  history_id integer NOT NULL,
   user_fk integer NOT NULL,
   episode integer NOT NULL,
   date_watched date NOT NULL,
-  history_id integer NOT NULL,
   PRIMARY KEY (history_id),
   CONSTRAINT history_user_fk_user_user_id_foreign FOREIGN KEY (user_fk) REFERENCES users (user_id),
   CONSTRAINT history_episode_episode_episode_id_foreign FOREIGN KEY (episode) REFERENCES episode (episode_id)

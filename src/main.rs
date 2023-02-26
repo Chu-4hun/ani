@@ -8,7 +8,7 @@ use actix_web::{
     App, HttpServer,
 };
 use actix_web_httpauth::middleware::HttpAuthentication;
-use controllers::auth::{basic_auth, create_user, generate_access};
+use controllers::{auth::{basic_auth, create_user, generate_access}, user_interactions::get_friend_requests};
 use controllers::user_interactions::send_friend_request;
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
@@ -44,6 +44,7 @@ async fn main() -> std::io::Result<()> {
                 .service(
                     web::scope("/interact")
                         .wrap(bearer_middleware_access)
+                        .service(get_friend_requests)
                         .service(send_friend_request),
                 ),
         )
