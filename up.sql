@@ -15,7 +15,7 @@ CREATE TABLE users (
   user_id serial NOT NULL,
   user_name varchar(30) unique NOT NULL,
   password varchar(255) NOT NULL,
-  email varchar(255) NOT NULL,
+  email varchar(255) unique NOT NULL,
   PRIMARY KEY (user_id)
 );
 

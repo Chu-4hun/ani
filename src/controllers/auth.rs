@@ -53,7 +53,7 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
         },
     }
 }
-#[get("/access")]
+#[get("/")]
 async fn generate_access(credentials: BearerAuth,) -> HttpResponse {
     let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
     HttpResponse::Ok().json(TokenClaims::generate_access(calims.id))

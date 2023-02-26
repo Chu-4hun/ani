@@ -42,6 +42,23 @@ pub async fn get_user_by_name(user_name: &str,state: Data<AppState>) -> Result<D
     Ok(user)
 }
 
+pub async fn get_user_by_name_and_email(user_name: &str, email: &str,state: Data<AppState>) -> Result<DbUser, sqlx::Error> {
+    
+    let user = sqlx::query_as::<_, DbUser>(
+        "
+        SELECT *
+        FROM users
+        WHERE user_name = $1, email = $2
+        ",
+    )
+    .bind(user_name)
+    .bind(email)
+    .fetch_one(&state.db)
+    .await?;
+    Ok(user)
+}
+
+
 pub async fn get_user_by_id(user_id: i32, state: &Data<AppState>) -> Result<DbUser, sqlx::Error> {
     let user = sqlx::query_as::<_, DbUser>(
         "

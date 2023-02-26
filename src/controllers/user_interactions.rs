@@ -14,27 +14,26 @@ use crate::{
 #[post("/friend/add/{user_id}")]
 pub async fn send_friend_request(
     state: Data<AppState>,
-    user_id: web::Path<i32>,
+    friend_id: web::Path<i32>,
     credentials: BearerAuth,
 ) -> impl Responder {
     let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
     let sender = get_user_by_id(calims.id, &state).await.unwrap();
 
-    match get_user_by_id(*user_id, &state).await {
+    match get_user_by_id(*friend_id, &state).await {
         Ok(user) => match FriendRequest::send_friend_request(sender, user, &state).await {
             Ok(request) => HttpResponse::Accepted().json(request),
-            Err(_) => HttpResponse::BadRequest().body("wrong user id"),
+            Err(err) => {
+                HttpResponse::BadRequest().body(format!("wrong user id \n {}", err.to_string()))
+            }
         },
-        Err(_) => HttpResponse::BadRequest().body("wrong user id"),
-    };
-    HttpResponse::Accepted().json(calims.id)
+        Err(_) => HttpResponse::BadRequest().body("wrong user id 2"),
+    }
+    // HttpResponse::Accepted().json(calims.id)
 }
 
 #[get("/friend/show")]
-pub async fn get_friend_requests(
-    state: Data<AppState>,
-    credentials: BearerAuth,
-) -> impl Responder {
+pub async fn get_friend_requests(state: Data<AppState>, credentials: BearerAuth) -> impl Responder {
     let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
     let sender = get_user_by_id(calims.id, &state).await.unwrap();
 
