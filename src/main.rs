@@ -8,7 +8,7 @@ use actix_web::{
     App, HttpServer,
 };
 use actix_web_httpauth::middleware::HttpAuthentication;
-use controllers::{auth::{basic_auth, create_user, generate_access}, user_interactions::get_friend_requests};
+use controllers::{auth::{basic_auth, generate_access, create_user}, user_interactions::get_friend_requests};
 use controllers::user_interactions::send_friend_request;
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};

@@ -30,8 +30,8 @@ impl FriendRequest {
         RETURNING *;
         ",
         )
-        .bind(from_user.user_id)
-        .bind(to_user.user_id)
+        .bind(from_user.id)
+        .bind(to_user.id)
         .bind(1)
         .fetch_one(&state.db)
         .await
@@ -44,7 +44,7 @@ impl FriendRequest {
         RETURNING *;
         ",
         )
-        .bind(from_user.user_id)
+        .bind(from_user.id)
         .bind(1)
         .fetch_one(&state.db)
         .await

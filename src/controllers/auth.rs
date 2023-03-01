@@ -22,15 +22,19 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
         .unwrap()
         .to_string();
 
+    if !user_is_unique(&user.login, &user.email, &state).await.unwrap() {
+        return HttpResponse::BadRequest().json("username or email already claimed");
+    }
+
     //TODO move this user model
     match sqlx::query_as::<_, UserNoPassword>(
         "
-        INSERT INTO users (user_name, password, email)
+        INSERT INTO users (login, password, email)
         VALUES ($1, $2, $3)
-        RETURNING user_id, user_name;
+        RETURNING id, login;
         ",
     )
-    .bind(user.user_name)
+    .bind(user.login)
     .bind(hash)
     .bind(user.email)
     .fetch_one(&state.db)
@@ -54,26 +58,26 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
     }
 }
 #[get("/")]
-async fn generate_access(credentials: BearerAuth,) -> HttpResponse {
+async fn generate_access(credentials: BearerAuth) -> HttpResponse {
     let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
     HttpResponse::Ok().json(TokenClaims::generate_access(calims.id))
 }
 
 #[get("/login")]
 async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Responder {
-    let user_name = credentials.user_id();
+    let login = credentials.user_id();
     let pass = credentials.password();
 
     match pass {
         None => HttpResponse::Unauthorized().json("Must provide user_name and password"),
-        Some(pass) => match get_user_by_name(user_name, state).await {
+        Some(pass) => match get_user_by_name(login, state).await {
             Ok(user) => {
                 let parsed_hash = PasswordHash::new(&user.password).unwrap();
                 let is_valid = Argon2::default()
                     .verify_password(pass.as_bytes(), &parsed_hash)
                     .is_ok();
                 if is_valid {
-                    HttpResponse::Ok().json(TokenClaims::generate_refresh(user.user_id))
+                    HttpResponse::Ok().json(TokenClaims::generate_refresh(user.id))
                 } else {
                     HttpResponse::Unauthorized().json("Incorrect user_name or password")
                 }
