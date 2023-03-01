@@ -1,6 +1,6 @@
 use actix_web::web::Data;
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Row};
+use sqlx::FromRow;
 
 use crate::AppState;
 

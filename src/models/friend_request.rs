@@ -1,10 +1,10 @@
 use actix_web::web::Data;
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow,};
+use sqlx::FromRow;
 
 use crate::AppState;
 
-use super::user::{User, DbUser};
+use super::user::DbUser;
 
 #[derive(Serialize, Deserialize, FromRow)]
 pub struct FriendRequest {
