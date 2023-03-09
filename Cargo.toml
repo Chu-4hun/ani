@@ -11,11 +11,12 @@ chrono = { version = "0.4.22", features = ["serde"] }
 serde = { version = "1.0.145", features = ["derive"] }
 serde_json = "1.0.86"
 sqlx = { version = "^0.6.2", features = ["postgres", "runtime-actix-rustls", "chrono", "json", "macros","bigdecimal"] }
+diesel = { version = "2.0.3", features = ["postgres"] }
 
 actix-web-httpauth = "0.8.0"
 jwt = "0.16.0"
 hmac = "0.12.1"
-argon2 = "0.4.1"
+argon2 = "0.5.0"
 sha2 = "0.10.6"
 
 
