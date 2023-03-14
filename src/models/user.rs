@@ -1,23 +1,22 @@
+use actix_web::http::Error;
 use actix_web::web::Data;
+
+use diesel::prelude::*;
+use diesel::r2d2::{self, ConnectionManager};
+
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
 
 use crate::AppState;
+use crate::ConnectionPool;
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize)]
 pub struct User {
     pub login: String,
     pub password: String,
     pub email: String,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
-pub struct UserNoPassword {
-    pub id: i32,
-    pub login: String,
-}
-
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, Queryable)]
 pub struct DbUser {
     pub id: i32,
     pub login: String,
@@ -25,32 +24,39 @@ pub struct DbUser {
     pub email: String,
 }
 
-pub async fn get_user_by_name(login: &str, state: Data<AppState>) -> Result<DbUser, sqlx::Error> {
-    let user = sqlx::query_as::<_, DbUser>(
-        "
-        SELECT *
-        FROM users
-        WHERE login = $1
-        ",
-    )
-    .bind(login)
-    .fetch_one(&state.db)
-    .await?;
-    Ok(user)
+// pub async fn get_user_by_name(login: &str, state: Data<AppState>) -> Result<DbUser, sqlx::Error> {
+//     let user = sqlx::query_as::<_, DbUser>(
+//         "
+//         SELECT *
+//         FROM users
+//         WHERE login = $1
+//         ",
+//     )
+//     .bind(login)
+//     .fetch_one(&state.db)
+//     .await?;
+//     Ok(user)
+// }
+pub fn get_user_by_name(_login: &str, db: ConnectionPool) -> Result<DbUser, diesel::result::Error> {
+    use crate::schema::users::dsl::*;
+    let connection = db.get().expect("Couldn't db database connection");
+
+    users
+        .filter(login.eq(_login))
+        .first::<DbUser>(&mut connection)
 }
+
 pub async fn user_is_unique(
     login: &str,
     email: &str,
-    state: &Data<AppState>,
-) -> Result<bool, sqlx::Error> {
-    let count = sqlx::query_scalar!(
-        "SELECT count(id) FROM users WHERE login = $1 OR email = $2",
-        login,
-        email
-    )
-    .fetch_one(&state.db)
-    .await?
-    .unwrap_or(0);
+    db: ConnectionPool,
+) -> Result<bool, diesel::result::Error> {
+    use crate::schema::users::dsl::*;
+    let count = users
+        .filter(login.eq(login))
+        .filter(email.eq(email))
+        .count()
+        .get_result(&mut db.get().expect("Couldn't db database connection")).unwrap();
     Ok(count == 0)
 }
 

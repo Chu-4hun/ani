@@ -1,5 +1,6 @@
 pub mod controllers;
 pub mod models;
+pub mod schema;
 pub mod token;
 mod validators;
 
@@ -8,14 +9,19 @@ use actix_web::{
     App, HttpServer,
 };
 use actix_web_httpauth::middleware::HttpAuthentication;
-use controllers::{auth::{basic_auth, generate_access, create_user}, user_interactions::get_friend_requests};
 use controllers::user_interactions::send_friend_request;
+use controllers::{
+    auth::{basic_auth, create_user, generate_access},
+    user_interactions::get_friend_requests,
+};
+use diesel::{r2d2::ConnectionManager, PgConnection};
 use dotenv::dotenv;
-use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use r2d2_postgres::r2d2;
 use validators::{validator_acces, validator_refresh};
 
+type ConnectionPool = r2d2::Pool<ConnectionManager<PgConnection>>;
 pub struct AppState {
-    db: Pool<Postgres>,
+    db: ConnectionPool,
 }
 
 #[actix_web::main]
@@ -23,11 +29,10 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
-        .await
-        .expect("Error building a connection pool");
+    let connection_manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool = r2d2::Pool::builder()
+        .build(connection_manager)
+        .expect("Failed to create pool");
 
     HttpServer::new(move || {
         let bearer_middleware_refresh = HttpAuthentication::bearer(validator_refresh);

@@ -16,8 +16,13 @@ use argon2::{
 
 #[post("/register")]
 async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder {
-    let user: User = body.into_inner();
-    let hash = Argon2::default()
+    let user: U{
+    let db = connection;
+    use crate::schema::users::dsl::*;
+    let connection = db.get().expect("Couldn't db database connection");
+
+    users.filter(login.eq(login)).first::<DbUser>(&mut connection)
+}ash = Argon2::default()
         .hash_password(user.password.as_bytes(), &SaltString::generate(&mut OsRng))
         .unwrap()
         .to_string();
@@ -27,11 +32,11 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
     }
 
     //TODO move this user model
-    match sqlx::query_as::<_, UserNoPassword>(
+    match sqlx::query_as::<_, DbUser>(
         "
         INSERT INTO users (login, password, email)
         VALUES ($1, $2, $3)
-        RETURNING id, login;
+        RETURNING *;
         ",
     )
     .bind(user.login)
@@ -67,10 +72,11 @@ async fn generate_access(credentials: BearerAuth) -> HttpResponse {
 async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Responder {
     let login = credentials.user_id();
     let pass = credentials.password();
+    let connection = state.db.get().expect("Couldn't get database connection");
 
     match pass {
         None => HttpResponse::Unauthorized().json("Must provide user_name and password"),
-        Some(pass) => match get_user_by_name(login, state).await {
+        Some(pass) => match get_user_by_name(login, connection).await {
             Ok(user) => {
                 let parsed_hash = PasswordHash::new(&user.password).unwrap();
                 let is_valid = Argon2::default()

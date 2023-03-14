@@ -1,7 +1,8 @@
+use diesel::prelude::*;
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 
-#[derive(Serialize, Deserialize, FromRow,)]
+#[derive(Serialize, Deserialize, FromRow,Queryable)]
 pub struct UserInfo {
     pub user_id: i32,
     pub status: String,
