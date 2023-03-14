@@ -27,11 +27,11 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
     }
 
     //TODO move this user model
-    match sqlx::query_as::<_, UserNoPassword>(
+    match sqlx::query_as::<_, DbUser>(
         "
         INSERT INTO users (login, password, email)
         VALUES ($1, $2, $3)
-        RETURNING id, login;
+        RETURNING *
         ",
     )
     .bind(user.login)
@@ -40,7 +40,7 @@ async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder 
     .fetch_one(&state.db)
     .await
     {
-        Ok(user) => HttpResponse::Ok().json(user),
+        Ok(_) => HttpResponse::Ok().body("success"),
         Err(error) => match error {
             sqlx::Error::Database(error) => {
                 match error

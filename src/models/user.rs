@@ -12,12 +12,6 @@ pub struct User {
 }
 
 #[derive(Serialize, Deserialize, FromRow)]
-pub struct UserNoPassword {
-    pub id: i32,
-    pub login: String,
-}
-
-#[derive(Serialize, Deserialize, FromRow)]
 pub struct DbUser {
     pub id: i32,
     pub login: String,
@@ -78,7 +72,7 @@ pub async fn get_user_by_id(user_id: i32, state: &Data<AppState>) -> Result<DbUs
         "
         SELECT *
         FROM users
-        WHERE user_id = $1
+        WHERE id = $1
         ",
     )
     .bind(user_id)

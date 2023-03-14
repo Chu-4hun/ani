@@ -8,9 +8,8 @@ use super::user::DbUser;
 
 #[derive(Serialize, Deserialize, FromRow)]
 pub struct FriendRequest {
-    pub id: i32,
-    pub usr: String,
-    pub friend: String,
+    pub usr: i32,
+    pub friend: i32,
     pub request_status: FriendRequestStatus,
 }
 
@@ -32,16 +31,14 @@ impl FriendRequest {
         )
         .bind(from_user.id)
         .bind(to_user.id)
-        .bind(1)
+        .bind(0)
         .fetch_one(&state.db)
         .await
     }
     pub async fn get_friend_requests(from_user: DbUser, state: &Data<AppState>) -> Result<FriendRequest, sqlx::Error> {
          sqlx::query_as::<_, FriendRequest>(
             "
-        SELECT INTO user_friend_requests (usr, friend, request_status)
-        VALUES ($1, $2, $3)
-        RETURNING *;
+        SELECT * FROM user_friend_requests WHERE usr = $1 AND friend = $2
         ",
         )
         .bind(from_user.id)

@@ -19,15 +19,26 @@ pub async fn send_friend_request(
 ) -> impl Responder {
     let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
     let sender = get_user_by_id(calims.id, &state).await.unwrap();
+    let i = friend_id.into_inner();
 
-    match get_user_by_id(*friend_id, &state).await {
+    match get_user_by_id(i, &state).await {
         Ok(user) => match FriendRequest::send_friend_request(sender, user, &state).await {
             Ok(request) => HttpResponse::Accepted().json(request),
-            Err(err) => {
-                HttpResponse::BadRequest().body(format!("wrong user id \n {}", err.to_string()))
-            }
+            Err(error) => match error {
+                sqlx::Error::Database(error) => {
+                    match error
+                        .downcast_ref::<sqlx::postgres::PgDatabaseError>()
+                        .code()
+                        == "23505"
+                    {
+                        true => HttpResponse::BadRequest().json("request already sent"),
+                        false => HttpResponse::BadRequest().body("wrong user id"),
+                    }
+                }
+                _ => HttpResponse::BadRequest().body("wrong user id"),
+            },
         },
-        Err(_) => HttpResponse::BadRequest().body("wrong user id 2"),
+        Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
     }
     // HttpResponse::Accepted().json(calims.id)
 }
