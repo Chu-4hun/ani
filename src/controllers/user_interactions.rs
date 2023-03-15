@@ -50,6 +50,6 @@ pub async fn get_friend_requests(state: Data<AppState>, credentials: BearerAuth)
 
     match FriendRequest::get_friend_requests(sender, &state).await {
         Ok(requests) => HttpResponse::Accepted().json(requests),
-        Err(_) => HttpResponse::BadRequest().body("wrong user id"),
+        Err(e) => HttpResponse::BadRequest().body(format!("wrong user id \n{}", e.to_string())),
     }
 }
