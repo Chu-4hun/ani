@@ -1,22 +1,23 @@
-use crate::{token::TokenClaims, AppState};
+use crate::{token::TokenClaims, AppState, entity};
 use actix_web::{
     get, post,
-    web::{Data, Json},
+    web::{Data},
     HttpResponse, Responder,
 };
 use actix_web_httpauth::extractors::{basic::BasicAuth, bearer::BearerAuth};
 
-use crate::models::user::*;
-use sqlx;
-
+use sea_orm::{ActiveModelTrait, sea_query::Mode, JsonValue};
+use sqlx::{self, types::Json};
+use entity::users::*;
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
 
 #[post("/register")]
-async fn create_user(state: Data<AppState>, body: Json<User>) -> impl Responder {
-    let user: User = body.into_inner();
+async fn create_user(state: Data<AppState>, body: JsonValue) -> impl Responder {
+    let user = ActiveModel::from_json(body).unwrap();
+
     let hash = Argon2::default()
         .hash_password(user.password.as_bytes(), &SaltString::generate(&mut OsRng))
         .unwrap()
