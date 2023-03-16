@@ -41,14 +41,14 @@ impl FriendRequest {
     }
     
     pub async fn get_friend_requests(
-        from_user: DbUser,
+        from_user: i32,
         state: &Data<AppState>,
     ) -> Result<Vec<FriendRequest>, sqlx::Error> {
         sqlx::query_as::<_, FriendRequest>(
             "
         SELECT * FROM user_friend_requests WHERE usr = $1",
         )
-        .bind(from_user.id)
+        .bind(from_user)
         .fetch_all(&state.db).await
     }
 }
