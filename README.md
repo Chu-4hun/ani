@@ -10,20 +10,15 @@
   - [ ] history
   - [ ] bookmark
   - [ ] episode
-- [ ] API
+---
+- [ ] API V1
   - [x] Auth
   - [x] Register
   - [x] Login
   - [x] Friend requests
     - [x] Send
     - [x] View all
-    - [ ] Change status
-  - [ ] Change user info
-    - [ ] Avatar picture
-    - [ ] Status
-  - [ ] Change User credentials
-    - [ ] email
-    - [ ] password
+    - [x] Change status
   - [ ] Releases
     - [ ] Get + send video stream link
     - [ ] CRUD
@@ -36,3 +31,18 @@
     - [ ] Delete (Make blank)
     - [ ] Edit
     - [ ] Make " (is edited) " mark
+  - [ ] Change user info
+    - [ ] Avatar picture
+    - [ ] Status
+  - [ ] Change User credentials
+    - [ ] email
+    - [ ] password
+---
+- [ ] Tests
+  - [ ] Auth
+  - [ ] Register
+  - [ ] Login
+  - [ ] History
+    - [ ] Automatic insert
+  - [ ] Releases
+    - [ ] Get + send video stream link

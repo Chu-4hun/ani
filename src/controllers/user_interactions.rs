@@ -63,20 +63,56 @@ pub async fn change_friend_status(
     credentials: BearerAuth,
 ) -> impl Responder {
     let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
-    let sender = get_user_by_id(calims.id, &state).await.unwrap();
+    let sender = get_user_by_id(calims.id, &state)
+        .await
+        .expect("There IS a valid token, but user wasnt found in database");
 
-    if request.is_valid(&state).await {
-    } else {
-        return HttpResponse::BadRequest().body("not nice");
+    if !request.is_valid(&state).await {
+        return HttpResponse::BadRequest().body("Friend Request is not valid");
     }
 
-    HttpResponse::BadRequest().body("not implemented method")
+    match request.request_status {
+        FriendRequestStatus::Pending => {
+            return HttpResponse::MethodNotAllowed().body("You cant change status to this type")
+        }
+        FriendRequestStatus::Rejected => {
+            return update_status_if_not_sender(
+                request,
+                FriendRequestStatus::Rejected,
+                sender.id,
+                &state,
+            )
+            .await
+        }
+        FriendRequestStatus::Accepted => {
+            return update_status_if_not_sender(
+                request,
+                FriendRequestStatus::Accepted,
+                sender.id,
+                &state,
+            )
+            .await
+        }
+    }
 }
 
-async fn check(request: Json<FriendRequest>, sender: i32) -> impl Responder {
-    if request.request_status == FriendRequestStatus::Accepted && request.usr != sender {
-        return HttpResponse::BadRequest().body("nice");
+async fn update_status_if_not_sender(
+    request: Json<FriendRequest>,
+    status: FriendRequestStatus,
+    sender_id: i32,
+    state: &Data<AppState>,
+) -> HttpResponse {
+    if request.request_status == status && request.usr != sender_id {
+        match request.update_status(status, &state).await {
+            Ok(_) => return HttpResponse::Accepted().body("success"),
+            Err(e) => {
+                return HttpResponse::InternalServerError().body(format!(
+                    "please, send this error message to developers\n{:?}",
+                    e
+                ))
+            }
+        }
     } else {
-        return HttpResponse::BadRequest().body("not nice 2");
+        HttpResponse::BadRequest().body("You cant accept reqest what wasnt sent for you ( ´･･)ﾉ(._.`)")
     }
 }
