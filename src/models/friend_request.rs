@@ -39,7 +39,7 @@ impl FriendRequest {
         .fetch_one(&state.db)
         .await
     }
-    
+
     pub async fn get_friend_requests(
         from_user: i32,
         state: &Data<AppState>,
@@ -49,6 +49,50 @@ impl FriendRequest {
         SELECT * FROM user_friend_requests WHERE usr = $1",
         )
         .bind(from_user)
-        .fetch_all(&state.db).await
+        .fetch_all(&state.db)
+        .await
     }
+    pub async fn get_all_user_friends(
+        from_user: i32,
+        state: &Data<AppState>,
+    ) -> Result<Vec<FriendRequest>, sqlx::Error> {
+        sqlx::query_as::<_, FriendRequest>(
+            "
+        SELECT * FROM user_friend_requests WHERE (usr = $1 OR friend =$1) AND request_status = 2",
+        )
+        .bind(from_user)
+        .fetch_all(&state.db)
+        .await
+    }
+    pub async fn update_status(
+        &self,
+        status: FriendRequestStatus,
+        state: &Data<AppState>,
+    ) -> Result<bool, sqlx::Error> {
+        let rows_affected = sqlx::query!(
+            "UPDATE user_friend_requests  SET request_status = $1 
+            WHERE (usr = $2 OR friend =$2) AND (usr = $3 OR friend =$3)
+        ",
+            status as i32,
+            self.friend,
+            self.usr
+        )
+        .execute(&state.db)
+        .await?
+        .rows_affected();
+
+        Ok(rows_affected > 0)
+    }
+    pub async fn is_valid(&self, state: &Data<AppState>) -> bool {
+        let request = sqlx::query_as::<_, FriendRequest>(
+            "
+        SELECT * FROM user_friend_requests WHERE(usr = $1 OR friend =$1) AND (usr = $2 OR friend =$2)",
+        )
+        .bind(self.usr)
+        .bind(self.friend)
+        .fetch_one(&state.db)
+        .await;
+        request.is_ok()
+    }
+    
 }

@@ -60,12 +60,10 @@ CREATE TABLE user_friend_requests (
 );
 
 CREATE TABLE user_info (
-  id integer NOT NULL,
   user_FK integer NOT NULL,
   avatar varchar(255) NOT NULL,
   status varchar(255) NOT NULL,
   register_date date NOT NULL,
-  PRIMARY KEY (id),
   CONSTRAINT User_info_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id)
 );
 
@@ -78,3 +76,16 @@ CREATE TABLE history (
   CONSTRAINT history_user_fk_user_user_id_foreign FOREIGN KEY (user_fk) REFERENCES users (id),
   CONSTRAINT history_episode_episode_episode_id_foreign FOREIGN KEY (episode) REFERENCES episode (id)
 );
+
+CREATE OR REPLACE FUNCTION update_user_info_register_date() RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO user_info (user_FK, avatar, status, register_date)
+  VALUES (NEW.id, 'https://randomuser.me/api/portraits/lego/2.jpg', 'active', now());
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER insert_register_date
+AFTER INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_user_info_register_date();

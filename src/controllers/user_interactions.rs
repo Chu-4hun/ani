@@ -1,12 +1,15 @@
 use actix_web::{
     get, post,
-    web::{self, Data},
+    web::{self, Data, Json},
     HttpResponse, Responder,
 };
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 
 use crate::{
-    models::{friend_request::FriendRequest, user::get_user_by_id},
+    models::{
+        friend_request::{FriendRequest, FriendRequestStatus},
+        user::get_user_by_id,
+    },
     token::TokenClaims,
     AppState,
 };
@@ -50,5 +53,30 @@ pub async fn get_friend_requests(state: Data<AppState>, credentials: BearerAuth)
     match FriendRequest::get_friend_requests(sender.id, &state).await {
         Ok(requests) => HttpResponse::Accepted().json(requests),
         Err(e) => HttpResponse::BadRequest().body(format!("wrong user id \n{}", e.to_string())),
+    }
+}
+
+#[post("/friend/change")]
+pub async fn change_friend_status(
+    state: Data<AppState>,
+    request: Json<FriendRequest>,
+    credentials: BearerAuth,
+) -> impl Responder {
+    let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
+    let sender = get_user_by_id(calims.id, &state).await.unwrap();
+
+    if request.is_valid(&state).await {
+    } else {
+        return HttpResponse::BadRequest().body("not nice");
+    }
+
+    HttpResponse::BadRequest().body("not implemented method")
+}
+
+async fn check(request: Json<FriendRequest>, sender: i32) -> impl Responder {
+    if request.request_status == FriendRequestStatus::Accepted && request.usr != sender {
+        return HttpResponse::BadRequest().body("nice");
+    } else {
+        return HttpResponse::BadRequest().body("not nice 2");
     }
 }
