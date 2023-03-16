@@ -1,0 +1,38 @@
+# Rust backend for video streaming service
+## TODO :
+
+- [ ] Models
+  - [x] user
+  - [x] user_info
+  - [x] user_friend_requests
+  - [ ] review
+  - [ ] releases
+  - [ ] history
+  - [ ] bookmark
+  - [ ] episode
+- [ ] API
+  - [x] Auth
+  - [x] Register
+  - [x] Login
+  - [x] Friend requests
+    - [x] Send
+    - [x] View all
+    - [ ] Change status
+  - [ ] Change user info
+    - [ ] Avatar picture
+    - [ ] Status
+  - [ ] Change User credentials
+    - [ ] email
+    - [ ] password
+  - [ ] Releases
+    - [ ] Get + send video stream link
+    - [ ] CRUD
+    - [ ] Store apisodes
+  - [ ] History
+    - [ ] Automatic insert
+    - [ ] Set max history lengh of 10 releases for 1 user
+  - [ ] Review 
+    - [ ] Add 
+    - [ ] Delete (Make blank)
+    - [ ] Edit
+    - [ ] Make " (is edited) " mark
