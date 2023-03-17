@@ -1,5 +1,5 @@
 CREATE TABLE releases (
-  release_id serial NOT NULL,
+  id serial NOT NULL,
   release_type varchar(255) DEFAULT 'unknown' NOT NULL,
   release_date date NOT NULL,
   rating decimal DEFAULT '0' NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE releases (
   author varchar(50) DEFAULT NULL,
   studio varchar(50) DEFAULT NULL,
   description varchar(255) NOT NULL,
-  PRIMARY KEY (release_id)
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE users (
@@ -26,7 +26,7 @@ CREATE TABLE bookmark (
   release_FK integer NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT bookmark_user_fk_user_user_id_foreign FOREIGN KEY (user_fk) REFERENCES users (id),
-  CONSTRAINT bookmark_release_FK_releases_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (release_id)
+  CONSTRAINT bookmark_release_FK_releases_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (id)
 );
 
 CREATE TABLE episode (
@@ -35,7 +35,7 @@ CREATE TABLE episode (
   ep_name varchar(255) DEFAULT NULL,
   url varchar(255) NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT episode_release_FK_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (release_id)
+  CONSTRAINT episode_release_FK_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (id)
 );
 
 CREATE TABLE review (
@@ -46,24 +46,27 @@ CREATE TABLE review (
   rating decimal NOT NULL,
   release_FK integer NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT review_release_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (release_id),
+  CONSTRAINT review_release_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (id),
   CONSTRAINT review_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id)
 );
 
 CREATE TABLE user_friend_requests (
+  id serial NOT NULL,
   usr integer NOT NULL,
   friend integer NOT NULL,
   request_status integer NOT NULL,
-  PRIMARY KEY (usr, friend),
+  PRIMARY KEY (id),
   CONSTRAINT user_friends_user_user_user_id_foreign FOREIGN KEY (usr) REFERENCES users (id),
   CONSTRAINT user_friends_friend_user_user_id_foreign FOREIGN KEY (friend) REFERENCES users (id)
 );
 
 CREATE TABLE user_info (
+  id integer NOT NULL,
   user_FK integer NOT NULL,
   avatar varchar(255) NOT NULL,
   status varchar(255) NOT NULL,
   register_date date NOT NULL,
+  PRIMARY KEY (id),
   CONSTRAINT User_info_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id)
 );
 

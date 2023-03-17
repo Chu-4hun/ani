@@ -8,10 +8,9 @@ use actix_web_httpauth::extractors::bearer::BearerAuth;
 use crate::{
     models::{
         friend_request::{FriendRequest, FriendRequestStatus},
-        user::get_user_by_id,
     },
     token::TokenClaims,
-    AppState,
+    AppState, repo::user_repo::get_user_by_id,
 };
 
 #[post("/friend/add/{user_id}")]

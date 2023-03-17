@@ -5,8 +5,8 @@
   - [x] user
   - [x] user_info
   - [x] user_friend_requests
+  - [x] releases
   - [ ] review
-  - [ ] releases
   - [ ] history
   - [ ] bookmark
   - [ ] episode

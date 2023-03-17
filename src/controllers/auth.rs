@@ -1,4 +1,4 @@
-use crate::{token::TokenClaims, AppState};
+use crate::{token::TokenClaims, AppState, repo::user_repo::{get_user_by_name, user_is_unique}};
 use actix_web::{
     get, post,
     web::{Data, Json},

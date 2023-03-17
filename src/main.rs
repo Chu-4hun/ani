@@ -2,6 +2,7 @@ pub mod controllers;
 pub mod models;
 pub mod token;
 mod validators;
+mod repo;
 
 use actix_web::{
     web::{self, Data},
