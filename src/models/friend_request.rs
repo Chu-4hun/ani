@@ -1,6 +1,6 @@
 use actix_web::web::Data;
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::{postgres::PgQueryResult, FromRow};
 
 use crate::AppState;
 
@@ -8,12 +8,13 @@ use super::user::DbUser;
 
 #[derive(Serialize, Deserialize, FromRow)]
 pub struct FriendRequest {
+    #[serde(skip_deserializing)]
     pub usr: i32,
     pub friend: i32,
     pub request_status: FriendRequestStatus,
 }
 
-#[derive(Serialize, Deserialize, Clone, PartialEq, sqlx::Type)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, sqlx::Type, Copy)]
 #[repr(i32)]
 pub enum FriendRequestStatus {
     Pending,
@@ -35,7 +36,7 @@ impl FriendRequest {
         )
         .bind(from_user.id)
         .bind(to_user.id)
-        .bind(0)
+        .bind(FriendRequestStatus::Pending)
         .fetch_one(&state.db)
         .await
     }
@@ -46,7 +47,7 @@ impl FriendRequest {
     ) -> Result<Vec<FriendRequest>, sqlx::Error> {
         sqlx::query_as::<_, FriendRequest>(
             "
-        SELECT * FROM user_friend_requests WHERE usr = $1",
+        SELECT * FROM user_friend_requests WHERE usr = $1 OR friend = $1",
         )
         .bind(from_user)
         .fetch_all(&state.db)
@@ -94,5 +95,31 @@ impl FriendRequest {
         .await;
         request.is_ok()
     }
-    
+    pub async fn can_update_status(&self, state: &Data<AppState>) -> bool {
+        let request = sqlx::query(
+            "
+        SELECT * FROM user_friend_requests WHERE usr = $1 AND friend = $2 AND request_status = $3",
+        )
+        .bind(self.usr)
+        .bind(self.friend)
+        .bind(FriendRequestStatus::Pending)
+        .execute(&state.db)
+        .await
+        .unwrap();
+        request.rows_affected() == 0
+    }
+    pub async fn delete(&self, state: &Data<AppState>) -> bool {
+        match sqlx::query(
+            "
+        DELETE FROM user_friend_requests WHERE usr = $1 AND friend = $2",
+        )
+        .bind(self.usr)
+        .bind(self.friend)
+        .execute(&state.db)
+        .await
+        {
+            Ok(_) => return true,
+            Err(_) => return false,
+        }
+    }
 }

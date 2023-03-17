@@ -66,53 +66,41 @@ pub async fn change_friend_status(
     let sender = get_user_by_id(calims.id, &state)
         .await
         .expect("There IS a valid token, but user wasnt found in database");
+    let mut _req = request;
+    _req.usr = sender.id;
 
-    if !request.is_valid(&state).await {
+    if !_req.is_valid(&state).await {
         return HttpResponse::BadRequest().body("Friend Request is not valid");
     }
+    if _req.request_status != FriendRequestStatus::Rejected && !_req.can_update_status(&state).await
+    {
+        return HttpResponse::BadRequest().body("You cant change status to this type.");
+    }
 
-    match request.request_status {
+    match _req.request_status {
         FriendRequestStatus::Pending => {
-            return HttpResponse::MethodNotAllowed().body("You cant change status to this type")
+            return HttpResponse::BadRequest().body("You cant change status to this type")
         }
-        FriendRequestStatus::Rejected => {
-            return update_status_if_not_sender(
-                request,
-                FriendRequestStatus::Rejected,
-                sender.id,
-                &state,
-            )
-            .await
-        }
-        FriendRequestStatus::Accepted => {
-            return update_status_if_not_sender(
-                request,
-                FriendRequestStatus::Accepted,
-                sender.id,
-                &state,
-            )
-            .await
-        }
+        FriendRequestStatus::Rejected => match _req.delete(&state).await {
+            true => return HttpResponse::Accepted().body("As you say"),
+            false => return HttpResponse::NotFound().body("Cant find this friend"),
+        },
+        status => return update_status_handler(_req, status, &state).await,
     }
 }
 
-async fn update_status_if_not_sender(
+async fn update_status_handler(
     request: Json<FriendRequest>,
     status: FriendRequestStatus,
-    sender_id: i32,
     state: &Data<AppState>,
 ) -> HttpResponse {
-    if request.request_status == status && request.usr != sender_id {
-        match request.update_status(status, &state).await {
-            Ok(_) => return HttpResponse::Accepted().body("success"),
-            Err(e) => {
-                return HttpResponse::InternalServerError().body(format!(
-                    "please, send this error message to developers\n{:?}",
-                    e
-                ))
-            }
+    match request.update_status(status, &state).await {
+        Ok(_) => return HttpResponse::Accepted().body("success"),
+        Err(e) => {
+            return HttpResponse::InternalServerError().body(format!(
+                "please, send this error message to developers\n{:?}",
+                e
+            ))
         }
-    } else {
-        HttpResponse::BadRequest().body("You cant accept reqest what wasnt sent for you ( ´･･)ﾉ(._.`)")
     }
 }
