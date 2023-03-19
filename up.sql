@@ -43,7 +43,7 @@ CREATE TABLE review (
   id serial NOT NULL,
   user_FK integer NOT NULL,
   review_text text NOT NULL,
-  rev_data date NOT NULL,
+  rev_data TIMESTAMP WITH TIME ZONE NOT NULL,
   rating real NOT NULL,
   release_FK integer NOT NULL,
   PRIMARY KEY (id),
@@ -75,7 +75,7 @@ CREATE TABLE history (
   id serial NOT NULL,
   user_fk integer NOT NULL,
   episode integer NOT NULL,
-  date_watched date NOT NULL,
+  date_watched TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT history_user_fk_user_user_id_foreign FOREIGN KEY (user_fk) REFERENCES users (id),
   CONSTRAINT history_episode_episode_episode_id_foreign FOREIGN KEY (episode) REFERENCES episode (id)
