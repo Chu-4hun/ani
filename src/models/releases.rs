@@ -2,17 +2,21 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
+use super::episode::Episode;
+
 #[derive(Serialize, Deserialize, FromRow)]
-struct Release {
-    id: i32,
-    release_type: ReleaseType,
-    release_date: DateTime<Utc>,
-    rating: f32,
-    min_age: f32,
-    director: String,
-    author: String,
-    studio: String,
-    description: String,
+pub struct Release {
+    #[serde(skip_deserializing)]
+    pub id: i32,
+    pub release_type: ReleaseType,
+    pub release_name: String,
+    pub release_date: DateTime<Utc>,
+    pub rating: f32,
+    pub min_age: f32,
+    pub director: String,
+    pub author: String,
+    pub studio: String,
+    pub description: String,
 }
 #[derive(Serialize, Deserialize, Clone, PartialEq, sqlx::Type, Copy)]
 #[repr(i32)]
@@ -20,4 +24,10 @@ pub enum ReleaseType {
     Cinema,
     Series,
     Animation,
+}
+
+#[derive(Serialize, Deserialize, FromRow)]
+pub struct ReleaseWithEpisodes {
+    pub release: Release,
+    pub episodes: Vec<Episode>,
 }

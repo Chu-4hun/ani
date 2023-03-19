@@ -1,6 +1,7 @@
 CREATE TABLE releases (
   id serial NOT NULL,
-  release_type varchar(255) DEFAULT 'unknown' NOT NULL,
+  release_type int NOT NULL,
+  release_name varchar(255) DEFAULT 'unknown' NOT NULL,
   release_date date NOT NULL,
   rating decimal DEFAULT '0' NOT NULL,
   min_age integer NOT NULL,
@@ -61,7 +62,7 @@ CREATE TABLE user_friend_requests (
 );
 
 CREATE TABLE user_info (
-  id integer NOT NULL,
+  id serial NOT NULL,
   user_FK integer NOT NULL,
   avatar varchar(255) NOT NULL,
   status varchar(255) NOT NULL,
