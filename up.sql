@@ -1,13 +1,13 @@
 CREATE TABLE releases (
   id serial NOT NULL,
-  release_type int NOT NULL,
-  release_name varchar(255) DEFAULT 'unknown' NOT NULL,
-  release_date TIMESTAMP WITH TIME ZONE  NOT NULL,
+  release_type varchar(255) DEFAULT 'unknown' NOT NULL,
+  release_name varchar(255) DEFAULT 'unknown',
+  release_date TIMESTAMP WITH TIME ZONE NOT NULL,
   rating real DEFAULT '0' NOT NULL,
   min_age integer NOT NULL,
-  director varchar(50)  DEFAULT 'unknown' NULL,
-  author varchar(50)    DEFAULT 'unknown' NULL,
-  studio varchar(50)    DEFAULT 'unknown' NULL,
+  director varchar(50) DEFAULT NULL,
+  author varchar(50) DEFAULT NULL,
+  studio varchar(50) DEFAULT NULL,
   description varchar(255) NOT NULL,
   PRIMARY KEY (id)
 );
@@ -62,13 +62,12 @@ CREATE TABLE user_friend_requests (
 );
 
 CREATE TABLE user_info (
-  id serial NOT NULL,
-  user_FK integer NOT NULL,
+  id integer NOT NULL,
   avatar varchar(255) NOT NULL,
   status varchar(255) NOT NULL,
   register_date TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT User_info_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id)
+  CONSTRAINT user_info_id_users_id_foreign FOREIGN KEY (id) REFERENCES users (id)
 );
 
 CREATE TABLE history (
@@ -83,7 +82,7 @@ CREATE TABLE history (
 
 CREATE OR REPLACE FUNCTION update_user_info_register_date() RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO user_info (user_FK, avatar, status, register_date)
+  INSERT INTO user_info (id, avatar, status, register_date)
   VALUES (NEW.id, 'https://randomuser.me/api/portraits/lego/2.jpg', 'active', now());
   RETURN NULL;
 END;

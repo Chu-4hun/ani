@@ -32,9 +32,9 @@
     - [ ] Delete (Make blank)
     - [ ] Edit
     - [ ] Make " (is edited) " mark
-  - [ ] Change user info
-    - [ ] Avatar picture
-    - [ ] Status
+  - [x] Change user info
+    - [x] Avatar picture
+    - [x] Status
   - [ ] Change User credentials
     - [ ] email
     - [ ] password

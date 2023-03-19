@@ -3,10 +3,13 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, PartialEq)]
 pub struct UserInfo {
+    #[serde(skip_deserializing)]
     pub id: i32,
     pub status: String,
     pub avatar: String,
-    pub regi_date: DateTime<Utc>,
+
+    #[serde(skip_deserializing)]
+    pub register_date: DateTime<Utc>,
 }
