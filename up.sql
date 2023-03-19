@@ -2,8 +2,8 @@ CREATE TABLE releases (
   id serial NOT NULL,
   release_type int NOT NULL,
   release_name varchar(255) DEFAULT 'unknown' NOT NULL,
-  release_date date NOT NULL,
-  rating decimal DEFAULT '0' NOT NULL,
+  release_date TIMESTAMP WITH TIME ZONE  NOT NULL,
+  rating real DEFAULT '0' NOT NULL,
   min_age integer NOT NULL,
   director varchar(50) DEFAULT NULL,
   author varchar(50) DEFAULT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE review (
   user_FK integer NOT NULL,
   review_text text NOT NULL,
   rev_data date NOT NULL,
-  rating decimal NOT NULL,
+  rating real NOT NULL,
   release_FK integer NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT review_release_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (id),
@@ -66,7 +66,7 @@ CREATE TABLE user_info (
   user_FK integer NOT NULL,
   avatar varchar(255) NOT NULL,
   status varchar(255) NOT NULL,
-  register_date date NOT NULL,
+  register_date TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT User_info_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id)
 );

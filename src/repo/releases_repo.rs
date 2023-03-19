@@ -61,15 +61,15 @@ impl Release {
     }
 
     pub async fn get_all_by_rating_with_pagination(
-        id: i32,
+        cursor: i32,
         limit: i32,
         state: &Data<AppState>,
     ) -> Result<Vec<Release>, sqlx::Error> {
         sqlx::query_as::<_, Release>(
             "
-        SELECT * FROM releases WHERE rating > $1 ORDER BY rating ASC LIMIT $2",
+        SELECT * FROM releases WHERE id >= $1 ORDER BY rating ASC LIMIT $2",
         )
-        .bind(id)
+        .bind(cursor)
         .bind(limit)
         .fetch_all(&state.db)
         .await

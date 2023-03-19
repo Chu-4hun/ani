@@ -1,16 +1,20 @@
 pub mod controllers;
 pub mod models;
+mod repo;
 pub mod token;
 mod validators;
-mod repo;
 
 use actix_web::{
     web::{self, Data},
     App, HttpServer,
 };
 use actix_web_httpauth::middleware::HttpAuthentication;
-use controllers::{auth::{basic_auth, generate_access, create_user}, user_interactions::{get_friend_requests, change_friend_status}};
 use controllers::user_interactions::send_friend_request;
+use controllers::{
+    auth::{basic_auth, create_user, generate_access},
+    releases_controller::get_popular_releases,
+    user_interactions::{change_friend_status, get_friend_requests},
+};
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use validators::{validator_acces, validator_refresh};
@@ -41,6 +45,11 @@ async fn main() -> std::io::Result<()> {
                     web::scope("/access")
                         .wrap(bearer_middleware_refresh)
                         .service(generate_access),
+                )
+                .service(
+                    web::scope("/watch")
+                        .wrap(bearer_middleware_access.clone())
+                        .service(get_popular_releases),
                 )
                 .service(
                     web::scope("/interact")

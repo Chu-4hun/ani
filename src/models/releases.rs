@@ -12,7 +12,7 @@ pub struct Release {
     pub release_name: String,
     pub release_date: DateTime<Utc>,
     pub rating: f32,
-    pub min_age: f32,
+    pub min_age: i32,
     pub director: String,
     pub author: String,
     pub studio: String,
