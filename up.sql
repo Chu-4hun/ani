@@ -5,9 +5,9 @@ CREATE TABLE releases (
   release_date TIMESTAMP WITH TIME ZONE  NOT NULL,
   rating real DEFAULT '0' NOT NULL,
   min_age integer NOT NULL,
-  director varchar(50) DEFAULT NULL,
-  author varchar(50) DEFAULT NULL,
-  studio varchar(50) DEFAULT NULL,
+  director varchar(50)  DEFAULT 'unknown' NULL,
+  author varchar(50)    DEFAULT 'unknown' NULL,
+  studio varchar(50)    DEFAULT 'unknown' NULL,
   description varchar(255) NOT NULL,
   PRIMARY KEY (id)
 );

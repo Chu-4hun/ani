@@ -22,7 +22,8 @@
   - [ ] Releases
     - [ ] Get + send video stream link
     - [ ] CRUD
-    - [ ] Store apisodes
+    - [x] Get all releases by raiting
+    - [ ] Store episodes
   - [ ] History
     - [ ] Automatic insert
     - [ ] Set max history lengh of 10 releases for 1 user

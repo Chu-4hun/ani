@@ -9,7 +9,7 @@ use actix_web::{
     App, HttpServer,
 };
 use actix_web_httpauth::middleware::HttpAuthentication;
-use controllers::user_interactions::send_friend_request;
+use controllers::{user_interactions::send_friend_request, releases_controller::{search_releases, get_release}};
 use controllers::{
     auth::{basic_auth, create_user, generate_access},
     releases_controller::get_popular_releases,
@@ -49,6 +49,8 @@ async fn main() -> std::io::Result<()> {
                 .service(
                     web::scope("/watch")
                         .wrap(bearer_middleware_access.clone())
+                        .service(search_releases)
+                        .service(get_release)
                         .service(get_popular_releases),
                 )
                 .service(

@@ -2,7 +2,7 @@ use actix_web::web::Data;
 use chrono::{DateTime, Utc};
 
 use crate::{
-    models::{releases::*, user::DbUser},
+    models::{releases::*, episode::Episode},
     AppState,
 };
 
@@ -77,9 +77,9 @@ impl Release {
 
     pub async fn get_all_by_simalar_name(
         release_name: &str,
-        state: Data<AppState>,
-    ) -> Result<Vec<DbUser>, sqlx::Error> {
-        let user = sqlx::query_as::<_, DbUser>(
+        state: &Data<AppState>,
+    ) -> Result<Vec<Release>, sqlx::Error> {
+        let user = sqlx::query_as::<_, Release>(
             "
         SELECT *
         FROM releases
@@ -93,9 +93,9 @@ impl Release {
     }
     pub async fn get_all_episodes(
         &self,
-        state: Data<AppState>,
-    ) -> Result<Vec<Release>, sqlx::Error> {
-        sqlx::query_as::<_, Release>(
+        state: &Data<AppState>,
+    ) -> Result<Vec<Episode>, sqlx::Error> {
+        sqlx::query_as::<_, Episode>(
             "
         SELECT e.*
         FROM episode e
@@ -108,7 +108,7 @@ impl Release {
         .await
     }
 
-    pub async fn get_by_id(id: i32, state: Data<AppState>) -> Result<Release, sqlx::Error> {
+    pub async fn get_by_id(id: i32, state: &Data<AppState>) -> Result<Release, sqlx::Error> {
         sqlx::query_as::<_, Release>(
             "
         SELECT *
