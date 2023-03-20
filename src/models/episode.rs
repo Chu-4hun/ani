@@ -5,7 +5,9 @@ use sqlx::FromRow;
 pub struct Episode {
     #[serde(skip_deserializing)]
     pub id: i32,
-    pub release_id: i32,
+    pub release_fk: i32,
+    pub dub_fk: i32,
     pub ep_name: String,
-    pub url: String
+    pub url: String,
+    pub position: i32
 }

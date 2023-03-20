@@ -1,14 +1,22 @@
+CREATE TABLE dub (
+  id serial NOT NULL,
+  name varchar(50) NOT NULL,
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE releases (
   id serial NOT NULL,
-  release_type varchar(255) DEFAULT 'unknown' NOT NULL,
-  release_name varchar(255) DEFAULT 'unknown',
-  release_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  release_type integer DEFAULT 0 NOT NULL,
+  release_date TIMESTAMP WITH TIME ZONE DEFAULT now(),
   rating real DEFAULT '0' NOT NULL,
   min_age integer NOT NULL,
-  director varchar(50) DEFAULT NULL,
-  author varchar(50) DEFAULT NULL,
-  studio varchar(50) DEFAULT NULL,
-  description varchar(255) NOT NULL,
+  director varchar(50) DEFAULT 'unknown',
+  author varchar(50) DEFAULT 'unknown',
+  studio varchar(50) DEFAULT 'unknown',
+  description text DEFAULT 'none' NOT NULL,
+  release_name varchar(255) DEFAULT 'none' NOT NULL,
+  img text DEFAULT 'https://kawai.shikimori.one/uploads/poster/animes/1/783ef0f9cb5' NOT NULL,
+  external_id text NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -32,11 +40,14 @@ CREATE TABLE bookmark (
 
 CREATE TABLE episode (
   id serial NOT NULL,
-  release_FK integer NOT NULL,
-  ep_name varchar(255) DEFAULT NULL,
+  release_fk integer NOT NULL,
+  dub_fk integer NOT NULL,
+  ep_name varchar(255) DEFAULT 'unknown',
   url varchar(255) NOT NULL,
+  position integer NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT episode_release_FK_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (id)
+  CONSTRAINT episode_dub_fk_dub_id_foreign FOREIGN KEY (dub_fk) REFERENCES dub (id),
+  CONSTRAINT episode_release_fk_releases_id_foreign FOREIGN KEY (release_fk) REFERENCES releases (id)
 );
 
 CREATE TABLE review (
@@ -63,11 +74,12 @@ CREATE TABLE user_friend_requests (
 
 CREATE TABLE user_info (
   id integer NOT NULL,
+  user_FK integer NOT NULL,
   avatar varchar(255) NOT NULL,
   status varchar(255) NOT NULL,
   register_date TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT user_info_id_users_id_foreign FOREIGN KEY (id) REFERENCES users (id)
+  CONSTRAINT User_info_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id)
 );
 
 CREATE TABLE history (

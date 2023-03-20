@@ -51,8 +51,10 @@ pub async fn get_release(
 ) -> impl Responder {
     match Release::get_by_id(release_id.into_inner(), &state).await {
         Ok(rel) => {
-            let episodes = rel.get_all_episodes(&state).await.unwrap_or(vec![]);
-            return HttpResponse::Accepted().json(ReleaseWithEpisodes{release: rel, episodes});
+            //TODO add dub support 
+            // let episodes = rel.get_all_episodes(&state).await.unwrap_or(vec![]);
+            // return HttpResponse::Accepted().json(ReleaseWithEpisodes{release: rel, episodes});
+            return HttpResponse::NotImplemented().body("dub not implemented");
         }
         Err(e) => return HttpResponse::BadRequest().body(format!("{}:?", e)),
     }

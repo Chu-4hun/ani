@@ -17,7 +17,10 @@ pub struct Release {
     pub author: String,
     pub studio: String,
     pub description: String,
+    pub img: String,
+    pub external_id: String
 }
+
 #[derive(Serialize, Deserialize, Clone, PartialEq, sqlx::Type, Copy)]
 #[repr(i32)]
 pub enum ReleaseType {

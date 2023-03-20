@@ -1,4 +1,5 @@
 # Rust backend for video streaming service
+## [Parser for Db](https://github.com/Chu-4hun/rust_ani_parser)
 ## TODO :
 
 - [ ] Models
@@ -21,7 +22,6 @@
     - [x] Change status
   - [ ] Releases
     - [ ] Get + send video stream link
-    - [ ] CRUD
     - [x] Get all releases by raiting
     - [ ] Store episodes
   - [ ] History
