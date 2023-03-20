@@ -10,7 +10,7 @@ pub struct Release {
     pub id: i32,
     pub release_type: ReleaseType,
     pub release_name: String,
-    pub release_date: DateTime<Utc>,
+    pub release_date: Option<DateTime<Utc>>,
     pub rating: f32,
     pub min_age: i32,
     pub director: String,
