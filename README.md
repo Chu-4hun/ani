@@ -10,7 +10,7 @@
   - [ ] review
   - [ ] history
   - [ ] bookmark
-  - [ ] episode
+  - [x] episode
 ---
 - [ ] API V1
   - [x] Auth
@@ -20,10 +20,10 @@
     - [x] Send
     - [x] View all
     - [x] Change status
-  - [ ] Releases
-    - [ ] Get + send video stream link
+  - [x] Releases
+    - [x] Get + send video stream link
     - [x] Get all releases by raiting
-    - [ ] Store episodes
+    - [x] Store episodes
   - [ ] History
     - [ ] Automatic insert
     - [ ] Set max history lengh of 10 releases for 1 user

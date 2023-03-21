@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-use super::episode::Episode;
+use super::{episode::Episode, dub::Dub};
 
 #[derive(Serialize, Deserialize, FromRow)]
 pub struct Release {
@@ -33,4 +33,10 @@ pub enum ReleaseType {
 pub struct ReleaseWithEpisodes {
     pub release: Release,
     pub episodes: Vec<Episode>,
+}
+
+#[derive(Serialize, Deserialize, FromRow)]
+pub struct ReleaseWithDubs {
+    pub release: Release,
+    pub episodes: Vec<Dub>,
 }

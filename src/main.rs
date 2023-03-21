@@ -11,7 +11,7 @@ use actix_web::{
 use actix_web_httpauth::middleware::HttpAuthentication;
 use controllers::{
     auth::{basic_auth, create_user, generate_access},
-    releases_controller::get_popular_releases,
+    releases_controller::{get_popular_releases, get_episodes},
     user_interactions::{change_friend_status, get_friend_requests},
 };
 use controllers::{
@@ -55,6 +55,7 @@ async fn main() -> std::io::Result<()> {
                         .wrap(bearer_middleware_access.clone())
                         .service(search_releases)
                         .service(get_release)
+                        .service(get_episodes)
                         .service(get_popular_releases),
                 )
                 .service(

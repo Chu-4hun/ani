@@ -87,11 +87,10 @@ impl Release {
     ) -> Result<Vec<Dub>, sqlx::Error> {
         sqlx::query_as::<_, Dub>(
             "
-            SELECT *
+            SELECT DISTINCT on (dub.id) dub.id, dub.name
             FROM dub
             INNER JOIN episode ON dub.id = episode.dub_fk
-            INNER JOIN releases ON episode.release_fk = releases.id
-            WHERE releases.id = $1;
+            WHERE episode.release_fk = $1;
         ",
         )
         .bind(&self.id)

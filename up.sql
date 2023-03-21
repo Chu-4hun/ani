@@ -74,12 +74,11 @@ CREATE TABLE user_friend_requests (
 
 CREATE TABLE user_info (
   id integer NOT NULL,
-  user_FK integer NOT NULL,
   avatar varchar(255) NOT NULL,
   status varchar(255) NOT NULL,
   register_date TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT User_info_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id)
+  CONSTRAINT user_info_id_users_id_foreign FOREIGN KEY (id) REFERENCES users (id)
 );
 
 CREATE TABLE history (

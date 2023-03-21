@@ -5,7 +5,10 @@ use actix_web::{
 };
 use serde::Deserialize;
 
-use crate::{models::releases::{Release, ReleaseWithEpisodes}, AppState};
+use crate::{
+    models::releases::{Release, ReleaseWithEpisodes},
+    AppState,
+};
 
 #[derive(Deserialize)]
 pub struct Pagination {
@@ -22,7 +25,6 @@ pub async fn get_popular_releases(
     state: Data<AppState>,
     pagination: web::Query<Pagination>,
 ) -> impl Responder {
-
     match Release::get_all_by_rating_with_pagination(pagination.cursor, 10, &state).await {
         Ok(rel) => {
             return HttpResponse::Accepted().json(rel);
@@ -45,18 +47,28 @@ pub async fn search_releases(
 }
 
 #[get("/release/{release_id}")]
-pub async fn get_release(
-    release_id: web::Path<i32>,
-    state: Data<AppState>,
-) -> impl Responder {
+pub async fn get_release(release_id: web::Path<i32>, state: Data<AppState>) -> impl Responder {
     match Release::get_by_id(release_id.into_inner(), &state).await {
         Ok(rel) => {
-            //TODO add dub support 
-            // let episodes = rel.get_all_episodes(&state).await.unwrap_or(vec![]);
-            // return HttpResponse::Accepted().json(ReleaseWithEpisodes{release: rel, episodes});
-            return HttpResponse::NotImplemented().body("dub not implemented");
+            //TODO add dub support
+            match rel.get_all_dub_options(&state).await {
+                Ok(dub) => return HttpResponse::Accepted().json(dub),
+                Err(e) => return HttpResponse::Gone().body(format!("{}",e)),
+            };
         }
         Err(e) => return HttpResponse::BadRequest().body(format!("{}:?", e)),
     }
 }
 
+#[get("/release/{release_id}/{dub_id}")]
+pub async fn get_episodes(ids: web::Path<(i32, i32)>, state: Data<AppState>) -> impl Responder {
+    let (release_id, dub_id) = ids.into_inner();
+
+    match Release::get_by_id(release_id, &state).await {
+        Ok(rel) => match rel.get_all_episodes_of_dub(dub_id, &state).await {
+            Ok(episodes) => return HttpResponse::Accepted().json(episodes),
+            Err(_) => return HttpResponse::Gone().body("no episodes found"),
+        },
+        Err(e) => return HttpResponse::BadRequest().body(format!("{}:?", e)),
+    }
+}
