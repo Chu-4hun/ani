@@ -12,7 +12,7 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 use controllers::{
     auth::{basic_auth, create_user, generate_access},
     releases_controller::{get_popular_releases, get_episodes},
-    user_interactions::{change_friend_status, get_friend_requests}, user_controller::search_profile,
+    user_interactions::{change_friend_status, get_friend_requests}, user_controller::{search_profile, get_profile},
 };
 use controllers::{
     releases_controller::{get_release, search_releases},
@@ -62,6 +62,7 @@ async fn main() -> std::io::Result<()> {
                     web::scope("/profile")
                         .wrap(bearer_middleware_access.clone())
                         .service(edit_profile)
+                        .service(get_profile)
                         .service(search_profile),
                 )
                 .service(

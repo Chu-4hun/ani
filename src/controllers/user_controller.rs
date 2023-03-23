@@ -4,7 +4,6 @@ use actix_web::{
     HttpResponse, Responder,
 };
 use actix_web_httpauth::extractors::bearer::BearerAuth;
-use serde_json::json;
 
 use crate::{
     controllers::releases_controller::Pagination,
@@ -51,6 +50,19 @@ pub async fn search_profile(
     pagination: web::Query<Pagination>,
 ) -> impl Responder {
     match get_users_by_simalar_name(request.0.request.as_str(), pagination.cursor, 40, &state).await
+    {
+        Ok(res) => {
+            return HttpResponse::Accepted().json(res);
+        }
+        Err(e) => return HttpResponse::NotFound().body(format!("No users was found {}", e)),
+    };
+}
+#[get("/{id}")]
+pub async fn get_profile(
+    state: Data<AppState>,
+    id: web::Path<i32>,
+) -> impl Responder {
+    match UserInfo::get_by_id(id.into_inner(), &state).await
     {
         Ok(res) => {
             return HttpResponse::Accepted().json(res);
