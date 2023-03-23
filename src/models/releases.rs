@@ -38,5 +38,5 @@ pub struct ReleaseWithEpisodes {
 #[derive(Serialize, Deserialize, FromRow)]
 pub struct ReleaseWithDubs {
     pub release: Release,
-    pub episodes: Vec<Dub>,
+    pub dubs: Vec<Dub>,
 }

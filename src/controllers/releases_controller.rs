@@ -6,7 +6,10 @@ use actix_web::{
 use serde::Deserialize;
 
 use crate::{
-    models::{releases::{Release}, utils::query_requests::SearchRequest},
+    models::{
+        releases::{Release, ReleaseWithDubs},
+        utils::query_requests::SearchRequest,
+    },
     AppState,
 };
 
@@ -14,7 +17,6 @@ use crate::{
 pub struct Pagination {
     pub cursor: i32,
 }
-
 
 #[get("/releases/popular/show")]
 pub async fn get_popular_releases(
@@ -48,8 +50,13 @@ pub async fn get_release(release_id: web::Path<i32>, state: Data<AppState>) -> i
         Ok(rel) => {
             //TODO add dub support
             match rel.get_all_dub_options(&state).await {
-                Ok(dub) => return HttpResponse::Accepted().json(dub),
-                Err(e) => return HttpResponse::Gone().body(format!("{}",e)),
+                Ok(dub) => {
+                    return HttpResponse::Accepted().json(ReleaseWithDubs {
+                        release: rel,
+                        dubs: dub,
+                    })
+                }
+                Err(e) => return HttpResponse::Gone().body(format!("{}", e)),
             };
         }
         Err(e) => return HttpResponse::BadRequest().body(format!("{}:?", e)),
