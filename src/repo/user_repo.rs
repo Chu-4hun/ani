@@ -1,7 +1,11 @@
+use std::fmt::Display;
+
 use actix_web::web::Data;
 
-use crate::{models::{user::DbUser}, AppState};
-
+use crate::{
+    models::user::{DbUser, User, UserWithInfo},
+    AppState,
+};
 
 pub async fn get_user_by_name(login: &str, state: Data<AppState>) -> Result<DbUser, sqlx::Error> {
     let user = sqlx::query_as::<_, DbUser>(
@@ -62,21 +66,26 @@ pub async fn get_user_by_id(user_id: i32, state: &Data<AppState>) -> Result<DbUs
     .bind(user_id)
     .fetch_one(&state.db)
     .await?;
-    Ok(user)
+Ok(user)
 }
 
 pub async fn get_users_by_simalar_name(
     login: &str,
-    state: Data<AppState>,
-) -> Result<Vec<DbUser>, sqlx::Error> {
-    let user = sqlx::query_as::<_, DbUser>(
+    cursor: i32,
+    limit: i32,
+    state: &Data<AppState>,
+) -> Result<Vec<UserWithInfo>, sqlx::Error> {
+    let user = sqlx::query_as::<_, UserWithInfo>(
         "
-        SELECT *
-        FROM users
-        WHERE login LIKE $1
+        SELECT u.id, u.login, ui.avatar, ui.status
+        FROM users u
+        LEFT JOIN user_info ui ON u.id = ui.id
+        WHERE u.login ILIKE $1 AND u.id >= $2 LIMIT $3
         ",
     )
     .bind(format!("%{}%", login))
+    .bind(cursor)
+    .bind(limit)
     .fetch_all(&state.db)
     .await?;
     Ok(user)

@@ -4,8 +4,15 @@ use actix_web::{
     HttpResponse, Responder,
 };
 use actix_web_httpauth::extractors::bearer::BearerAuth;
+use serde_json::json;
 
-use crate::{models::user_info::*, repo::user_repo::get_user_by_id, token::TokenClaims, AppState};
+use crate::{
+    controllers::releases_controller::Pagination,
+    models::{user_info::*, utils::query_requests::SearchRequest},
+    repo::user_repo::{get_user_by_id, get_users_by_simalar_name},
+    token::TokenClaims,
+    AppState,
+};
 
 #[post("/edit")]
 pub async fn edit_profile(
@@ -19,7 +26,9 @@ pub async fn edit_profile(
         Ok(user) => user,
         Err(_) => return HttpResponse::BadRequest().body("Not valid auth user"),
     };
-    let current_info = UserInfo::get_by_id(user.id, &state).await.expect("DB error");
+    let current_info = UserInfo::get_by_id(user.id, &state)
+        .await
+        .expect("DB error");
 
     match input_info.0.update(current_info.id, &state).await {
         Ok(res) => {
@@ -33,4 +42,19 @@ pub async fn edit_profile(
     };
 
     HttpResponse::InternalServerError().body("Wierd behavior")
+}
+
+#[get("/search")]
+pub async fn search_profile(
+    state: Data<AppState>,
+    request: web::Query<SearchRequest>,
+    pagination: web::Query<Pagination>,
+) -> impl Responder {
+    match get_users_by_simalar_name(request.0.request.as_str(), pagination.cursor, 40, &state).await
+    {
+        Ok(res) => {
+            return HttpResponse::Accepted().json(res);
+        }
+        Err(e) => return HttpResponse::NotFound().body(format!("No users was found {}", e)),
+    };
 }

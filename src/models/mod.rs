@@ -4,3 +4,4 @@ pub mod friend_request;
 pub mod releases;
 pub mod episode;
 pub mod dub;
+pub mod utils;

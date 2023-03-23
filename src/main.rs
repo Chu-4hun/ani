@@ -12,12 +12,12 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 use controllers::{
     auth::{basic_auth, create_user, generate_access},
     releases_controller::{get_popular_releases, get_episodes},
-    user_interactions::{change_friend_status, get_friend_requests},
+    user_interactions::{change_friend_status, get_friend_requests}, user_controller::search_profile,
 };
 use controllers::{
     releases_controller::{get_release, search_releases},
     user_interactions::send_friend_request,
-    user_profile::edit_profile,
+    user_controller::edit_profile,
 };
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
@@ -61,7 +61,8 @@ async fn main() -> std::io::Result<()> {
                 .service(
                     web::scope("/profile")
                         .wrap(bearer_middleware_access.clone())
-                        .service(edit_profile),
+                        .service(edit_profile)
+                        .service(search_profile),
                 )
                 .service(
                     web::scope("/interact")

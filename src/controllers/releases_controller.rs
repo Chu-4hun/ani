@@ -6,7 +6,7 @@ use actix_web::{
 use serde::Deserialize;
 
 use crate::{
-    models::releases::{Release, ReleaseWithEpisodes},
+    models::{releases::{Release}, utils::query_requests::SearchRequest},
     AppState,
 };
 
@@ -15,10 +15,6 @@ pub struct Pagination {
     pub cursor: i32,
 }
 
-#[derive(Deserialize)]
-pub struct SearchRequest {
-    pub request: String,
-}
 
 #[get("/releases/popular/show")]
 pub async fn get_popular_releases(
