@@ -53,7 +53,7 @@ impl Release {
             "
         SELECT *
         FROM releases
-        WHERE release_name LIKE $1
+        WHERE release_name ILIKE $1
         ",
         )
         .bind(format!("%{}%", release_name))
