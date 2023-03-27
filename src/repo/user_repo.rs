@@ -1,9 +1,7 @@
-use std::fmt::Display;
-
 use actix_web::web::Data;
 
 use crate::{
-    models::user::{DbUser, User, UserWithInfo},
+    models::user::{DbUser, UserWithInfo},
     AppState,
 };
 

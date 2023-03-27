@@ -72,7 +72,8 @@ impl Release {
             FROM episode
             INNER JOIN releases ON episode.release_fk = releases.id
             INNER JOIN dub ON episode.dub_fk = dub.id
-            WHERE releases.id = $1 AND dub.id = $2;
+            WHERE releases.id = $1 AND dub.id = $2
+            ORDER BY position ASC;
         ",
         )
         .bind(&self.id)
