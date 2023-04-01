@@ -11,7 +11,6 @@ RUN cargo chef cook --release --recipe-path recipe.json
 FROM rust as builder
 WORKDIR app
 COPY . .
-COPY .env.container ./.env
 # Copy over the cached dependencies
 COPY --from=cacher /app/target target
 COPY --from=cacher $CARGO_HOME $CARGO_HOME
