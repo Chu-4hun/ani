@@ -1,24 +1,20 @@
-FROM lukemathwalker/cargo-chef as planner
-WORKDIR app
+FROM clux/muslrust:stable AS builder
+USER root
+RUN cargo install cargo-chef
+WORKDIR /app
+
+COPY Cargo.toml .
+COPY Cargo.lock .
+COPY src/main.rs src/main.rs
+RUN cargo chef prepare --recipe-path recipe.json
+
+RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
+
 COPY . .
-RUN cargo chef prepare  --recipe-path recipe.json
-
-FROM lukemathwalker/cargo-chef as cacher
-WORKDIR app
-COPY --from=planner /app/recipe.json recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json
-
-FROM rust as builder
-WORKDIR app
-COPY . .
-# Copy over the cached dependencies
-COPY --from=cacher /app/target target
-COPY --from=cacher $CARGO_HOME $CARGO_HOME
-
 ARG SQLX_OFFLINE=true
-RUN cargo build --release --bin rust_ani
+RUN cargo build --release --target x86_64-unknown-linux-musl --bin rust_ani
 
-FROM rust as runtime
-WORKDIR app
-COPY --from=builder /app/target/release/rust_ani /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/rust_ani"]
+
+FROM alpine AS runtime
+COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/rust_ani /usr/local/bin/rust_ani
+CMD ["/usr/local/bin/rust_ani"]
