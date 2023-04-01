@@ -1,0 +1,78 @@
+{
+  "db": "PostgreSQL",
+  "163a3b807e85c4641c5753d67c718c72e0f7ec60ae88fda7a00be87ccb54c1bb": {
+    "describe": {
+      "columns": [
+        {
+          "name": "count",
+          "ordinal": 0,
+          "type_info": "Int8"
+        }
+      ],
+      "nullable": [
+        null
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT count(id) FROM users WHERE login = $1 OR email = $2"
+  },
+  "8c2232887630177172a9840f3cf086fb86d0b1f2e4e30c867d4d54d24f8148b5": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Int4"
+        ]
+      }
+    },
+    "query": "UPDATE user_info  SET status = $1 WHERE id = $2\n        "
+  },
+  "bdd9b9fb0aa38fb4c5e58e6ebec6d56825623785fe58c037733224c277799080": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Int4"
+        ]
+      }
+    },
+    "query": "UPDATE user_info  SET avatar = $1 WHERE id = $2\n        "
+  },
+  "c54e667a13dfdafdfe8a81737343fb570baa805fac32897bde1ed8b968b4a5aa": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4",
+          "Int4"
+        ]
+      }
+    },
+    "query": "UPDATE user_friend_requests  SET request_status = $1 \n            WHERE (usr = $2 OR friend =$2) AND (usr = $3 OR friend =$3)\n        "
+  },
+  "f213a8c8fcd98c2ad0cda287e2f541f720bd7d16d2ee83f7c7aa7aa03ddb5065": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Varchar",
+          "Int4"
+        ]
+      }
+    },
+    "query": "UPDATE user_info  SET status = $1, avatar = $2 WHERE id = $3\n        "
+  }
+}

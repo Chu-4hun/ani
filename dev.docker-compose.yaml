@@ -1,12 +1,8 @@
 version: "3.7"
 
 services:
-  rust_ani:
-      container_name: rust_ani
-      build: .
-      ports:
-        - '8090:8090'
-        
+
+
   pg_db:
     image: postgres:15.1-alpine
     container_name: pg_db
@@ -17,7 +13,8 @@ services:
       - POSTGRES_DB=ani
     volumes:
       - db_pg_ani:/var/lib/postgresql/data/
-
+    ports:
+      - "5432:5432"
 
   adminer:
     image: adminer
