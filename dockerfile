@@ -1,6 +1,4 @@
-FROM clux/muslrust:stable AS builder
-USER root
-RUN cargo install cargo-chef
+FROM lukemathwalker/cargo-chef:latest-rust-1-alpine3.17 AS builder
 WORKDIR /app
 
 COPY Cargo.toml .
