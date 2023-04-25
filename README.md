@@ -18,15 +18,17 @@
   - [x] Login
   - [x] Friend requests
     - [x] Send
-    - [x] View all
+    - [ ] View all
+      - [ ] Add name to response
     - [x] Change status
   - [x] Releases
     - [x] Get + send video stream link
     - [x] Get all releases by raiting
     - [x] Store episodes
   - [ ] History
-    - [ ] Automatic insert
-    - [ ] Set max history lengh of 10 releases for 1 user
+    - [ ] Insert episode with timecode
+    - [ ] Set max history lengh of 5 releases for 1 user
+    - [ ] Get last 5 watched releases for user
   - [ ] Review 
     - [ ] Add 
     - [ ] Delete (Make blank)

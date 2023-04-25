@@ -20,6 +20,8 @@ services:
       - POSTGRES_DB=ani
     volumes:
       - db_pg_ani:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
 
 
   adminer:
