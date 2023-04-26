@@ -25,22 +25,22 @@
     - [x] Get + send video stream link
     - [x] Get all releases by raiting
     - [x] Store episodes
-  - [ ] Bookmarks
-    - [ ]  CRUD
-    - [ ]  Set visibility (Optional)
-    - [ ]  Move release to another collection
+  - [x] Change user info
+    - [x] Avatar picture
+    - [x] Status
   - [ ] History
     - [ ] Insert episode with timecode
     - [ ] Set max history lengh of 5 releases for 1 user
     - [ ] Get last 5 watched releases for user
+  - [ ] Bookmarks
+    - [ ]  CRUD
+    - [ ]  Set visibility (Optional)
+    - [ ]  Move release to another collection
   - [ ] Review 
     - [ ] Add 
     - [ ] Delete (Make blank)
     - [ ] Edit
     - [ ] Make " (is edited) " mark
-  - [x] Change user info
-    - [x] Avatar picture
-    - [x] Status
   - [ ] Change User credentials
     - [ ] email
     - [ ] password
