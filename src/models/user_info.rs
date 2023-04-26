@@ -9,6 +9,9 @@ pub struct UserInfo {
     pub id: i32,
     pub status: String,
     pub avatar: String,
+    
+    #[sqlx(default)]
+    pub login: Option<String>,
 
     #[serde(skip_deserializing)]
     pub register_date: DateTime<Utc>,

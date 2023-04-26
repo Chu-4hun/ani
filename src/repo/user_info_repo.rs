@@ -3,13 +3,13 @@ use actix_web::web::Data;
 use crate::{models::user_info::*, AppState};
 
 impl UserInfo {
-    pub async fn get_by_id(
-        user_id: i32,
-        state: &Data<AppState>,
-    ) -> Result<UserInfo, sqlx::Error> {
+    pub async fn get_by_id(user_id: i32, state: &Data<AppState>) -> Result<UserInfo, sqlx::Error> {
         sqlx::query_as::<_, UserInfo>(
             "
-        SELECT * FROM user_info WHERE id = $1",
+        SELECT user_info.*, users.login
+        FROM users
+        INNER JOIN user_info ON users.id = user_info.id
+        WHERE user_info.id= $1; ",
         )
         .bind(user_id)
         .fetch_one(&state.db)
@@ -34,11 +34,7 @@ impl UserInfo {
         request.len() > 0
     }
 
-    pub async fn update(
-        &self,
-        id: i32,
-        state: &Data<AppState>,
-    ) -> Result<bool, sqlx::Error> {
+    pub async fn update(&self, id: i32, state: &Data<AppState>) -> Result<bool, sqlx::Error> {
         let rows_affected = sqlx::query!(
             "UPDATE user_info  SET status = $1, avatar = $2 WHERE id = $3
         ",
