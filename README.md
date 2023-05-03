@@ -8,7 +8,7 @@
   - [x] user_friend_requests
   - [x] releases
   - [ ] review
-  - [ ] history
+  - [x] history
   - [ ] bookmark
   - [x] episode
 ---
@@ -29,9 +29,10 @@
     - [x] Avatar picture
     - [x] Status
   - [ ] History
-    - [ ] Insert episode with timecode
-    - [ ] Set max history lengh of 5 releases for 1 user
-    - [ ] Get last 5 watched releases for user
+    - [x] Insert episode with timecode
+    - [x] Set max history lengh of 5 releases for 1 user
+    - [x] Get last 5 watched releases for user
+    - [ ] Set rules to acces user history
   - [ ] Bookmarks
     - [ ]  CRUD
     - [ ]  Set visibility (Optional)

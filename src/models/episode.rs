@@ -3,7 +3,7 @@ use sqlx::FromRow;
 
 #[derive(Serialize, Deserialize, FromRow)]
 pub struct Episode {
-    #[serde(skip_deserializing)]
+    // #[serde(skip_deserializing)]
     pub id: i32,
     pub release_fk: i32,
     pub dub_fk: i32,

@@ -5,3 +5,4 @@ pub mod releases;
 pub mod episode;
 pub mod dub;
 pub mod utils;
+pub mod history;

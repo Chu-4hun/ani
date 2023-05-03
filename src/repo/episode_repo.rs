@@ -21,7 +21,7 @@ impl Episode{
         .await
     }
     
-    pub async fn get_by_id(id: i32, state: Data<AppState>) -> Result<Episode, sqlx::Error> {
+    pub async fn get_by_id(id: i32, state: &Data<AppState>) -> Result<Episode, sqlx::Error> {
         sqlx::query_as::<_, Episode>(
             "
         SELECT *

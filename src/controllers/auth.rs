@@ -63,7 +63,7 @@ async fn generate_access(credentials: BearerAuth) -> HttpResponse {
     HttpResponse::Ok().json(TokenClaims::generate_access(calims.id))
 }
 
-#[get("/login")]
+#[post("/login")]
 async fn basic_auth(state: Data<AppState>, credentials: BasicAuth) -> impl Responder {
     let login = credentials.user_id();
     let pass = credentials.password();

@@ -68,7 +68,7 @@ impl Release {
     ) -> Result<Vec<Episode>, sqlx::Error> {
         sqlx::query_as::<_, Episode>(
             "
-            SELECT *
+            SELECT episode.id, episode.release_fk, episode.dub_fk, episode.ep_name, episode.url, episode.position
             FROM episode
             INNER JOIN releases ON episode.release_fk = releases.id
             INNER JOIN dub ON episode.dub_fk = dub.id
