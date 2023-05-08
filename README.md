@@ -33,15 +33,15 @@
     - [x] Set max history lengh of 5 releases for 1 user
     - [x] Get last 5 watched releases for user
     - [ ] Set rules to acces user history
-  - [ ] Bookmarks
-    - [ ]  CRUD
-    - [ ]  Set visibility (Optional)
-    - [ ]  Move release to another collection
   - [ ] Review 
     - [ ] Add 
     - [ ] Delete (Make blank)
     - [ ] Edit
     - [ ] Make " (is edited) " mark
+  - [ ] Bookmarks
+    - [ ]  CRUD
+    - [ ]  Set visibility (Optional)
+    - [ ]  Move release to another collection
   - [ ] Change User credentials
     - [ ] email
     - [ ] password

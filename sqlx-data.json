@@ -1,5 +1,53 @@
 {
   "db": "PostgreSQL",
+  "07dba7a099a420287fef7ae546565271ed365d77e4b215b602e1a9b0c4f3b906": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "episode",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "date_watched",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "duration",
+          "ordinal": 4,
+          "type_info": "Float8"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4",
+          "Timestamptz",
+          "Float8",
+          "Int4"
+        ]
+      }
+    },
+    "query": "UPDATE history SET user_fk = $1, episode = $2, date_watched = $3, duration = $4 WHERE id = $5 RETURNING id, user_fk, episode, date_watched, duration"
+  },
   "163a3b807e85c4641c5753d67c718c72e0f7ec60ae88fda7a00be87ccb54c1bb": {
     "describe": {
       "columns": [
@@ -21,6 +69,163 @@
     },
     "query": "SELECT count(id) FROM users WHERE login = $1 OR email = $2"
   },
+  "1fcbf859f3e57947baeeda1928aa7633f5af4737ddeeb912e53d0666839b0c4f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "count",
+          "ordinal": 0,
+          "type_info": "Int8"
+        }
+      ],
+      "nullable": [
+        null
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT count(id) FROM history WHERE user_fk =$1"
+  },
+  "229179b26b36c744d9599b7753acb82f7fb5a12040a66c4d4c888c755973e94f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "date_watched",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "episode",
+          "ordinal": 3,
+          "type_info": "Int4"
+        },
+        {
+          "name": "duration",
+          "ordinal": 4,
+          "type_info": "Float8"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4",
+          "Float8"
+        ]
+      }
+    },
+    "query": "INSERT INTO history (user_fk, episode, duration)\n             VALUES ($1, $2, $3) RETURNING id, user_fk, date_watched, episode, duration"
+  },
+  "428b5baca5db8bb0c61568ce3424b3d276e766d15a936b275ed9ec6bdcccb807": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "episode",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "date_watched",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "duration",
+          "ordinal": 4,
+          "type_info": "Float8"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT id, user_fk, episode, date_watched, duration FROM history WHERE id = $1"
+  },
+  "76a41a3758dc240a7beffc0ccb3530cffaaf9a3c30f86a4ea14f388406b10162": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "episode",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "date_watched",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "duration",
+          "ordinal": 4,
+          "type_info": "Float8"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4",
+          "Timestamptz",
+          "Float8"
+        ]
+      }
+    },
+    "query": "INSERT INTO history (user_fk, episode, date_watched, duration)\n             VALUES ($1, $2, $3, $4) RETURNING id, user_fk, episode, date_watched, duration"
+  },
   "8c2232887630177172a9840f3cf086fb86d0b1f2e4e30c867d4d54d24f8148b5": {
     "describe": {
       "columns": [],
@@ -33,6 +238,50 @@
       }
     },
     "query": "UPDATE user_info  SET status = $1 WHERE id = $2\n        "
+  },
+  "8fdc8e134a4c3067852bf0174e58b0072a2aac3de7ebc8735db1ce6048ed8e02": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "episode",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "date_watched",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "duration",
+          "ordinal": 4,
+          "type_info": "Float8"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT * FROM history WHERE user_fk = $1"
   },
   "bdd9b9fb0aa38fb4c5e58e6ebec6d56825623785fe58c037733224c277799080": {
     "describe": {
@@ -60,6 +309,18 @@
       }
     },
     "query": "UPDATE user_friend_requests  SET request_status = $1 \n            WHERE (usr = $2 OR friend =$2) AND (usr = $3 OR friend =$3)\n        "
+  },
+  "f2080c2fd038d8964dfa3b98bbe467f5b083e7756a233c8ab654cb8fa92cc17e": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "DELETE FROM history WHERE id = $1"
   },
   "f213a8c8fcd98c2ad0cda287e2f541f720bd7d16d2ee83f7c7aa7aa03ddb5065": {
     "describe": {
