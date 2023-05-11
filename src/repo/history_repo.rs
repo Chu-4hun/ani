@@ -1,8 +1,14 @@
 use actix_web::web::Data;
 
-use crate::{models::{history::{DBHistory}, user::DbUser, episode::Episode}, AppState};
+use crate::{
+    models::{
+        history::{DBHistory, HistoryResponse},
+        user::DbUser,
+    },
+    AppState,
+};
 
-impl DBHistory{
+impl DBHistory {
     pub async fn insert(&self, state: &Data<AppState>) -> Result<DBHistory, sqlx::Error> {
         let result = sqlx::query_as!(
             DBHistory,
@@ -17,7 +23,12 @@ impl DBHistory{
         .await?;
         Ok(result)
     }
-    pub async fn insert_values(user_fk: DbUser, episode: i32, duration:f64, state: &Data<AppState>) -> Result<DBHistory, sqlx::Error> {
+    pub async fn insert_values(
+        user_fk: DbUser,
+        episode: i32,
+        duration: f64,
+        state: &Data<AppState>,
+    ) -> Result<DBHistory, sqlx::Error> {
         let result = sqlx::query_as!(
             DBHistory,
             "INSERT INTO history (user_fk, episode, duration)
@@ -51,6 +62,22 @@ impl DBHistory{
         let histories = sqlx::query_as!(
             DBHistory,
             "SELECT * FROM history WHERE user_fk = $1",
+            user_id
+        )
+        .fetch_all(&state.db)
+        .await?;
+        Ok(histories)
+    }
+    pub async fn get_all_with_release_info(
+        user_id: i32,
+        state: &Data<AppState>,
+    ) -> Result<Vec<HistoryResponse>, sqlx::Error> {
+        let histories = sqlx::query_as!(
+            HistoryResponse,
+            "SELECT r.release_name, r.description, r.img, h.date_watched, h.duration, h.episode
+            FROM releases AS r
+            INNER JOIN history AS h ON r.id = h.episode
+            WHERE h.user_fk =$1",
             user_id
         )
         .fetch_all(&state.db)
@@ -91,4 +118,3 @@ impl DBHistory{
         Ok(count)
     }
 }
-

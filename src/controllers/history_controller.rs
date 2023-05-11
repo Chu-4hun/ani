@@ -3,13 +3,13 @@ use actix_web::{
     web::{self, Data},
     HttpResponse, Responder,
 };
-use actix_web_httpauth::extractors::{basic::BasicAuth, bearer::BearerAuth};
+use actix_web_httpauth::extractors::bearer::BearerAuth;
 use serde::Deserialize;
 
 use crate::{
     models::{
         episode::Episode,
-        history::{self, DBHistory},
+        history::DBHistory,
     },
     repo::user_repo::get_user_by_id,
     token::TokenClaims,
@@ -20,11 +20,12 @@ use crate::{
 async fn get_user_history(user_id: web::Path<i32>, state: Data<AppState>) -> HttpResponse {
     let id: i32 = user_id.into_inner();
     //TODO add setting to hide your history
-    match DBHistory::get_all_by_user(id, &state).await {
+    match DBHistory::get_all_with_release_info(id, &state).await {
         Ok(result) => HttpResponse::Ok().json(result),
         Err(_) => HttpResponse::BadRequest().body("wrong user id"),
     }
 }
+
 #[derive(Deserialize)]
 struct HistoryQuery {
     episode_id: i32,
