@@ -8,7 +8,7 @@ use serde::Deserialize;
 use crate::{
     models::{
         releases::{Release, ReleaseWithDubs},
-        utils::query_requests::SearchRequest,
+        utils::query_requests::SearchRequest, episode::Episode,
     },
     AppState,
 };
@@ -72,6 +72,27 @@ pub async fn get_episodes(ids: web::Path<(i32, i32)>, state: Data<AppState>) -> 
             Ok(episodes) => return HttpResponse::Accepted().json(episodes),
             Err(_) => return HttpResponse::Gone().body("no episodes found"),
         },
+        Err(e) => return HttpResponse::BadRequest().body(format!("{}:?", e)),
+    }
+}
+
+#[get("/episode/{id}")]
+pub async fn get_episode_by_id(id: web::Path<i32>, state: Data<AppState>) -> impl Responder {
+    let episode_id = id.into_inner();
+
+    match Episode::get_by_id(episode_id, &state).await {
+        Ok(episode) => return HttpResponse::Ok().json(episode),
+        Err(e) => return HttpResponse::BadRequest().body(format!("{}:?", e)),
+    }
+}
+#[derive(Deserialize)]
+pub struct EpisodeQuerry {
+    episode_id: i32,
+}
+#[get("/release")]
+pub async fn get_by_episode_id(querry: web::Query<EpisodeQuerry>, state: Data<AppState>) -> impl Responder {
+    match Release::get_by_episode_id(querry.episode_id, &state).await {
+        Ok(rel) => return HttpResponse::Ok().json(rel),
         Err(e) => return HttpResponse::BadRequest().body(format!("{}:?", e)),
     }
 }

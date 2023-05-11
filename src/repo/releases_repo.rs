@@ -111,4 +111,18 @@ impl Release {
         .fetch_one(&state.db)
         .await
     }
+
+    pub async fn get_by_episode_id(id: i32, state: &Data<AppState>) -> Result<Release, sqlx::Error> {
+        sqlx::query_as::<_, Release>(
+            "
+        SELECT r.*
+        FROM releases r
+        JOIN episode e ON e.release_fk = r.id
+        WHERE e.id = $1;
+        ",
+        )
+        .bind(id)
+        .fetch_one(&state.db)
+        .await
+    }
 }

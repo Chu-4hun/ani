@@ -11,7 +11,7 @@ use actix_web::{
 use actix_web_httpauth::middleware::HttpAuthentication;
 use controllers::{
     auth::{basic_auth, create_user, generate_access},
-    releases_controller::{get_popular_releases, get_episodes},
+    releases_controller::{get_popular_releases, get_episodes, get_episode_by_id, get_by_episode_id},
     user_interactions::{change_friend_status, get_friend_requests}, user_controller::{search_profile, get_profile}, history_controller::{get_user_history, insert_user_history},
 };
 use controllers::{
@@ -56,6 +56,8 @@ async fn main() -> std::io::Result<()> {
                         .service(search_releases)
                         .service(get_release)
                         .service(get_episodes)
+                        .service(get_episode_by_id)
+                        .service(get_by_episode_id)
                         .service(get_popular_releases),
                 )
                 .service(
