@@ -7,10 +7,7 @@ use actix_web_httpauth::extractors::bearer::BearerAuth;
 use serde::Deserialize;
 
 use crate::{
-    models::{
-        episode::Episode,
-        history::DBHistory,
-    },
+    models::{episode::Episode, history::DBHistory},
     repo::user_repo::get_user_by_id,
     token::TokenClaims,
     AppState,
@@ -44,12 +41,13 @@ async fn insert_user_history(
     match Episode::get_by_id(query.episode_id, &state).await {
         Ok(result) => {
             match DBHistory::insert_values(sender, result.id, query.duration, &state).await {
-                Ok(history) => HttpResponse::Ok().json(history),
-                Err(_) => {
-                    HttpResponse::InternalServerError().body("History is unable to be written")
-                }
+                Ok(history) => match history {
+                    Some(res) => HttpResponse::Ok().json(res),
+                    None => HttpResponse::Ok().body("history updated"),
+                },
+                Err(e) => HttpResponse::InternalServerError()
+                    .body("History is unable to be written".to_owned() + &e.to_string()),
             }
-            // HttpResponse::Ok().json(history)
         }
         Err(_) => HttpResponse::BadRequest().body("wrong user id"),
     }

@@ -115,3 +115,25 @@ CREATE TRIGGER delete_old_history_rows_trigger
 BEFORE INSERT ON history
 FOR EACH ROW
 EXECUTE FUNCTION delete_old_history_rows();
+
+-- Define the trigger function
+CREATE OR REPLACE FUNCTION history_insert_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if a row exists with the same user_fk and episode
+    IF EXISTS (SELECT 1 FROM history WHERE user_fk = NEW.user_fk AND episode = NEW.episode) THEN
+        -- If a row exists, update its values
+        UPDATE history SET date_watched = NEW.date_watched, duration = NEW.duration WHERE user_fk = NEW.user_fk AND episode = NEW.episode;
+        RETURN NULL;
+    ELSE
+        -- If a row doesn't exist, insert the new row
+        RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger
+CREATE TRIGGER history_insert
+BEFORE INSERT ON history
+FOR EACH ROW
+EXECUTE FUNCTION history_insert_trigger();

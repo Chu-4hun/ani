@@ -28,7 +28,7 @@ impl DBHistory {
         episode: i32,
         duration: f64,
         state: &Data<AppState>,
-    ) -> Result<DBHistory, sqlx::Error> {
+    ) -> Result<Option<DBHistory>, sqlx::Error> {
         let result = sqlx::query_as!(
             DBHistory,
             "INSERT INTO history (user_fk, episode, duration)
@@ -37,7 +37,7 @@ impl DBHistory {
             episode,
             duration
         )
-        .fetch_one(&state.db)
+        .fetch_optional(&state.db)
         .await?;
         Ok(result)
     }
