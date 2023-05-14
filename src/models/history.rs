@@ -24,4 +24,5 @@ pub struct HistoryResponse {
     pub duration: f64,
     pub date_watched: chrono::DateTime<chrono::Utc>,
     pub dub_id:i32,
+    pub position:i32,
 }

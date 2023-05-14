@@ -152,62 +152,6 @@
     },
     "query": "INSERT INTO history (user_fk, episode, duration)\n             VALUES ($1, $2, $3) RETURNING id, user_fk, date_watched, episode, duration"
   },
-  "2df9b720b76565e1a4226bc63b34895904a61a442a0f38407c2ba0de20ea0a5a": {
-    "describe": {
-      "columns": [
-        {
-          "name": "release_name",
-          "ordinal": 0,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "description",
-          "ordinal": 1,
-          "type_info": "Text"
-        },
-        {
-          "name": "img",
-          "ordinal": 2,
-          "type_info": "Text"
-        },
-        {
-          "name": "date_watched",
-          "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "duration",
-          "ordinal": 4,
-          "type_info": "Float8"
-        },
-        {
-          "name": "episode_id",
-          "ordinal": 5,
-          "type_info": "Int4"
-        },
-        {
-          "name": "dub_id",
-          "ordinal": 6,
-          "type_info": "Int4"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Int4"
-        ]
-      }
-    },
-    "query": "SELECT r.release_name, r.description, r.img, h.date_watched, h.duration, e.id as episode_id, d.id as dub_id\n            FROM releases r\n            JOIN episode e ON r.id = e.release_fk\n            JOIN history h ON e.id = h.episode\n            LEFT JOIN dub d ON e.dub_fk = d.id\n            WHERE h.user_fk = $1"
-  },
   "428b5baca5db8bb0c61568ce3424b3d276e766d15a936b275ed9ec6bdcccb807": {
     "describe": {
       "columns": [
@@ -251,6 +195,68 @@
       }
     },
     "query": "SELECT id, user_fk, episode, date_watched, duration FROM history WHERE id = $1"
+  },
+  "42b7ec9a4e3777f24327fd34fb347aaead41c753e88e62494958c2870dd9b338": {
+    "describe": {
+      "columns": [
+        {
+          "name": "release_name",
+          "ordinal": 0,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "description",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "img",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "date_watched",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "duration",
+          "ordinal": 4,
+          "type_info": "Float8"
+        },
+        {
+          "name": "episode_id",
+          "ordinal": 5,
+          "type_info": "Int4"
+        },
+        {
+          "name": "position",
+          "ordinal": 6,
+          "type_info": "Int4"
+        },
+        {
+          "name": "dub_id",
+          "ordinal": 7,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT r.release_name, r.description, r.img, h.date_watched, h.duration, e.id as episode_id,e.position, d.id as dub_id\n            FROM releases r\n            JOIN episode e ON r.id = e.release_fk\n            JOIN history h ON e.id = h.episode\n            LEFT JOIN dub d ON e.dub_fk = d.id\n            WHERE h.user_fk = $1 \n            ORDER BY h.date_watched DESC\n            "
   },
   "532b3fa88816d3e5dd7a45c18a67b3986bc10fa156c0ada03c8a61213b5c0b2f": {
     "describe": {

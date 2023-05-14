@@ -74,12 +74,14 @@ impl DBHistory {
     ) -> Result<Vec<HistoryResponse>, sqlx::Error> {
         let histories = sqlx::query_as!(
             HistoryResponse,
-            "SELECT r.release_name, r.description, r.img, h.date_watched, h.duration, e.id as episode_id, d.id as dub_id
+            "SELECT r.release_name, r.description, r.img, h.date_watched, h.duration, e.id as episode_id,e.position, d.id as dub_id
             FROM releases r
             JOIN episode e ON r.id = e.release_fk
             JOIN history h ON e.id = h.episode
             LEFT JOIN dub d ON e.dub_fk = d.id
-            WHERE h.user_fk = $1",
+            WHERE h.user_fk = $1 
+            ORDER BY h.date_watched DESC
+            ",
             user_id
         )
         .fetch_all(&state.db)
