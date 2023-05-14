@@ -120,11 +120,14 @@ EXECUTE FUNCTION delete_old_history_rows();
 -- Define the trigger function
 CREATE OR REPLACE FUNCTION history_insert_trigger()
 RETURNS TRIGGER AS $$
+DECLARE
+    history_id INTEGER;
 BEGIN
+    history_id = (SELECT history.id FROM history JOIN episode ON episode.id=history.episode WHERE user_fk = NEW.user_fk AND episode.release_fk = (SELECT release_fk FROM episode WHERE episode.id=NEW.episode));
     -- Check if a row exists with the same user_fk and episode
-    IF EXISTS (SELECT 1 FROM history WHERE user_fk = NEW.user_fk AND episode = NEW.episode) THEN
+    IF (history_id != 0) THEN
         -- If a row exists, update its values
-        UPDATE history SET date_watched = NEW.date_watched, duration = NEW.duration WHERE user_fk = NEW.user_fk AND episode = NEW.episode;
+        UPDATE history SET  episode = NEW.episode, date_watched = NEW.date_watched, duration = NEW.duration WHERE id = history_id;
         RETURN NULL;
     ELSE
         -- If a row doesn't exist, insert the new row

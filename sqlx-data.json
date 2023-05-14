@@ -69,6 +69,23 @@
     },
     "query": "SELECT count(id) FROM users WHERE login = $1 OR email = $2"
   },
+  "173b45d26db96b3c21b1e35596322cb26a987d35cdb26601b41a50c46d421139": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4",
+          "Text",
+          "Timestamptz",
+          "Int2",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE review\n            SET user_fk = $2, review_text = $3, rev_data = $4, rating = $5, release_fk = $6\n            WHERE id = $1\n            "
+  },
   "1fcbf859f3e57947baeeda1928aa7633f5af4737ddeeb912e53d0666839b0c4f": {
     "describe": {
       "columns": [
@@ -235,6 +252,161 @@
     },
     "query": "SELECT id, user_fk, episode, date_watched, duration FROM history WHERE id = $1"
   },
+  "532b3fa88816d3e5dd7a45c18a67b3986bc10fa156c0ada03c8a61213b5c0b2f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "review_text",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "rev_data",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "rating",
+          "ordinal": 4,
+          "type_info": "Int2"
+        },
+        {
+          "name": "release_fk",
+          "ordinal": 5,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Text",
+          "Int2",
+          "Int4"
+        ]
+      }
+    },
+    "query": "INSERT INTO review (user_fk, review_text , rating, release_fk)\n              VALUES ($1, $2, $3, $4) RETURNING id, user_fk, review_text, rev_data, rating, release_fk"
+  },
+  "5a2c301218e3d8f4e65e65311db77539735d1f4ba9ef04056d9c1df84bf20145": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "DELETE FROM bookmark WHERE id = $1"
+  },
+  "5ff60ee60ab2906ff6e32c80bdec3875b16a8b43fd1d411ad69cfa5dd0eefb45": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "review_text",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "rev_data",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "rating",
+          "ordinal": 4,
+          "type_info": "Int2"
+        },
+        {
+          "name": "release_fk",
+          "ordinal": 5,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            SELECT * FROM review\n            WHERE id = $1\n            "
+  },
+  "6479c6e59769282e079e681e21c3a54a9602baa8a0592e73c660dabf1956b1e9": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "bookmark_name",
+          "ordinal": 2,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "release_fk",
+          "ordinal": 3,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Varchar",
+          "Int4"
+        ]
+      }
+    },
+    "query": "INSERT INTO bookmark (user_fk, bookmark_name, release_FK)\n            VALUES ($1, $2, $3)\n            RETURNING id, user_fk, bookmark_name, release_FK"
+  },
   "76a41a3758dc240a7beffc0ccb3530cffaaf9a3c30f86a4ea14f388406b10162": {
     "describe": {
       "columns": [
@@ -339,6 +511,95 @@
     },
     "query": "SELECT * FROM history WHERE user_fk = $1"
   },
+  "9f028e6ba404679a90dc78250e0262e395f8f4d3a878d1dfce3741184cf3c583": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "bookmark_name",
+          "ordinal": 2,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "release_fk",
+          "ordinal": 3,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT id, user_fk, bookmark_name, release_FK\n            FROM bookmark\n            WHERE id = $1"
+  },
+  "ada13a3cf9bc4fee26856f1c2c8be23ee69b47b58de6b7b3cde1c1cf2ab50040": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "review_text",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "rev_data",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "rating",
+          "ordinal": 4,
+          "type_info": "Int2"
+        },
+        {
+          "name": "release_fk",
+          "ordinal": 5,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int8"
+        ]
+      }
+    },
+    "query": "SELECT review.*\n            FROM review\n            INNER JOIN releases ON review.release_FK = releases.id\n            WHERE releases.id = $1\n            ORDER BY review.rating DESC\n            LIMIT 10\n            OFFSET $2;"
+  },
   "bdd9b9fb0aa38fb4c5e58e6ebec6d56825623785fe58c037733224c277799080": {
     "describe": {
       "columns": [],
@@ -351,6 +612,44 @@
       }
     },
     "query": "UPDATE user_info  SET avatar = $1 WHERE id = $2\n        "
+  },
+  "c412e559175c408ddbec341386137e13acb3a2d95d900fc9bf27fdc2e1aedcbd": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "bookmark_name",
+          "ordinal": 2,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "release_fk",
+          "ordinal": 3,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT id, user_fk, bookmark_name, release_FK\n            FROM bookmark\n            WHERE user_fk = $1"
   },
   "c54e667a13dfdafdfe8a81737343fb570baa805fac32897bde1ed8b968b4a5aa": {
     "describe": {
