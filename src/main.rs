@@ -12,7 +12,7 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 use controllers::{
     auth::{basic_auth, create_user, generate_access},
     releases_controller::{get_popular_releases, get_episodes, get_episode_by_id, get_by_episode_id},
-    user_interactions::{change_friend_status, get_friend_requests}, user_controller::{search_profile, get_profile}, history_controller::{get_user_history, insert_user_history},
+    user_interactions::{change_friend_status, get_friend_requests}, user_controller::{search_profile, get_profile}, history_controller::{get_user_history, insert_user_history}, review_controller::{get_reviews, insert_review},
 };
 use controllers::{
     releases_controller::{get_release, search_releases},
@@ -72,6 +72,12 @@ async fn main() -> std::io::Result<()> {
                         .wrap(bearer_middleware_access.clone())
                         .service(get_user_history)
                         .service(insert_user_history),
+                )
+                .service(
+                    web::scope("/review")
+                        .wrap(bearer_middleware_access.clone())
+                        .service(get_reviews)
+                        .service(insert_review),
                 )
                 .service(
                     web::scope("/interact")

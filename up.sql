@@ -49,12 +49,13 @@ CREATE TABLE review (
   id serial NOT NULL,
   user_FK integer NOT NULL,
   review_text text NOT NULL,
-  rev_data TIMESTAMP WITH TIME ZONE NOT NULL,
-  rating real NOT NULL,
+  rev_data TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  rating smallint NOT NULL,
   release_FK integer NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT review_release_release_id_foreign FOREIGN KEY (release_FK) REFERENCES releases (id),
-  CONSTRAINT review_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id)
+  CONSTRAINT review_user_FK_user_user_id_foreign FOREIGN KEY (user_FK) REFERENCES users (id),
+  constraint valid_number check (rating <= 10)
 );
 CREATE TABLE user_friend_requests (
   id serial NOT NULL,
@@ -137,3 +138,57 @@ CREATE TRIGGER history_insert
 BEFORE INSERT ON history
 FOR EACH ROW
 EXECUTE FUNCTION history_insert_trigger();
+
+
+-- Review average --
+CREATE OR REPLACE FUNCTION update_release_avg_rating() RETURNS TRIGGER AS $$
+DECLARE
+    release_id INTEGER;
+    avg_rating REAL;
+BEGIN
+    -- Get the release id of the review being inserted
+    SELECT release_FK INTO release_id FROM review WHERE id = NEW.id;
+    
+    -- Calculate the average rating of the release
+    SELECT AVG(rating) INTO avg_rating FROM review WHERE release_FK = release_id;
+    
+    -- Update the release's average rating
+    UPDATE releases SET rating = avg_rating WHERE id = release_id;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER update_release_rating_trigger
+AFTER INSERT ON review
+FOR EACH ROW
+EXECUTE FUNCTION update_release_avg_rating();
+
+-- If user exist update old row -- 
+CREATE OR REPLACE FUNCTION update_review()
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM review
+    WHERE user_fk = NEW.user_fk
+    AND release_fk = NEW.release_fk
+  ) THEN
+    UPDATE review SET
+      review_text = NEW.review_text,
+      rev_data = NEW.rev_data,
+      rating = NEW.rating
+    WHERE user_fk = NEW.user_fk
+    AND release_fk = NEW.release_fk;
+    RETURN NULL;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER review_update
+BEFORE INSERT ON review
+FOR EACH ROW
+EXECUTE FUNCTION update_review();
