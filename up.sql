@@ -192,3 +192,29 @@ CREATE TRIGGER review_update
 BEFORE INSERT ON review
 FOR EACH ROW
 EXECUTE FUNCTION update_review();
+
+
+-- Check on insert for existing releases in bookmarks --
+CREATE OR REPLACE FUNCTION check_existing_release()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if the release already exists for the given user
+    IF EXISTS (
+        SELECT 1
+        FROM bookmark
+        WHERE user_fk = NEW.user_fk
+        AND release_fk = NEW.release_fk
+    ) THEN
+        -- Release already exists, skip the insert
+        RETURN NULL;
+    ELSE
+        -- Release doesn't exist, allow the insert
+        RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER skip_existing_release
+BEFORE INSERT ON bookmark
+FOR EACH ROW
+EXECUTE FUNCTION check_existing_release();

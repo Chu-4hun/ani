@@ -5,3 +5,4 @@ pub mod user_repo;
 pub mod episode_repo;
 pub mod history_repo;
 pub mod review_repo;
+pub mod bookmark_repo;
