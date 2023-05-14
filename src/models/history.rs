@@ -20,7 +20,8 @@ pub struct HistoryResponse {
     pub release_name: String,
     pub description: String,
     pub img: String,
-    pub episode: i32,
+    pub episode_id: i32,
     pub duration: f64,
     pub date_watched: chrono::DateTime<chrono::Utc>,
+    pub dub_id:i32,
 }

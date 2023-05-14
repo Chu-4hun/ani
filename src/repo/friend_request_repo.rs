@@ -1,5 +1,4 @@
 use actix_web::web::Data;
-
 use crate::{models::{friend_request::*, user::DbUser}, AppState};
 
 
