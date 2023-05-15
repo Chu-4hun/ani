@@ -1,9 +1,9 @@
 use actix_web::web::Data;
 
-use crate::{models::review::{Review, SimpleReview}, AppState};
+use crate::{models::review::{Review, SimpleReview, ReviewResponse}, AppState};
 
 impl Review {
-    pub async fn insert(user_fk:i32,request: SimpleReview, state: &Data<AppState>) -> Result<Review, sqlx::Error> {
+    pub async fn insert(user_fk:i32,request: SimpleReview, state: &Data<AppState>) -> Result<Option<Review>, sqlx::Error> {
         let result = sqlx::query_as!(
             Review,
             "INSERT INTO review (user_fk, review_text , rating, release_fk)
@@ -13,7 +13,7 @@ impl Review {
             request.rating,
             request.release_fk
         )
-        .fetch_one(&state.db)
+        .fetch_optional(&state.db)
         .await?;
         Ok(result)
     }
@@ -72,12 +72,14 @@ impl Review {
         release_id: i32,
         page: i32,
         state: &Data<AppState>,
-    ) -> Result<Vec<Review>, sqlx::Error> {
+    ) -> Result<Vec<ReviewResponse>, sqlx::Error> {
         let reviews = sqlx::query_as!(
-            Review,
-            "SELECT review.*
+            ReviewResponse,
+            "SELECT review.*, users.login, user_info.avatar
             FROM review
             INNER JOIN releases ON review.release_FK = releases.id
+            INNER JOIN users ON review.user_FK = users.id
+            INNER JOIN user_info ON review.user_FK = user_info.id
             WHERE releases.id = $1
             ORDER BY review.rating DESC
             LIMIT 10

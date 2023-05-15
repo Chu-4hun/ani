@@ -163,8 +163,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE TRIGGER update_release_rating_trigger
-AFTER INSERT ON review
+CREATE OR REPLACE TRIGGER update_release_rating_trigger
+AFTER INSERT OR UPDATE ON review
 FOR EACH ROW
 EXECUTE FUNCTION update_release_avg_rating();
 

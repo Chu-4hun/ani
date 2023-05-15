@@ -37,7 +37,7 @@ impl Release {
     ) -> Result<Vec<Release>, sqlx::Error> {
         sqlx::query_as::<_, Release>(
             "
-        SELECT * FROM releases WHERE id >= $1 ORDER BY rating ASC LIMIT $2",
+        SELECT * FROM releases WHERE id >= $1 ORDER BY rating DESC LIMIT $2",
         )
         .bind(cursor)
         .bind(limit)

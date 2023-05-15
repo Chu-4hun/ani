@@ -555,57 +555,6 @@
     },
     "query": "SELECT id, user_fk, bookmark_name, release_FK\n            FROM bookmark\n            WHERE id = $1"
   },
-  "ada13a3cf9bc4fee26856f1c2c8be23ee69b47b58de6b7b3cde1c1cf2ab50040": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Int4"
-        },
-        {
-          "name": "user_fk",
-          "ordinal": 1,
-          "type_info": "Int4"
-        },
-        {
-          "name": "review_text",
-          "ordinal": 2,
-          "type_info": "Text"
-        },
-        {
-          "name": "rev_data",
-          "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "rating",
-          "ordinal": 4,
-          "type_info": "Int2"
-        },
-        {
-          "name": "release_fk",
-          "ordinal": 5,
-          "type_info": "Int4"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        true,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Int4",
-          "Int8"
-        ]
-      }
-    },
-    "query": "SELECT review.*\n            FROM review\n            INNER JOIN releases ON review.release_FK = releases.id\n            WHERE releases.id = $1\n            ORDER BY review.rating DESC\n            LIMIT 10\n            OFFSET $2;"
-  },
   "bdd9b9fb0aa38fb4c5e58e6ebec6d56825623785fe58c037733224c277799080": {
     "describe": {
       "columns": [],
@@ -656,6 +605,69 @@
       }
     },
     "query": "SELECT id, user_fk, bookmark_name, release_FK\n            FROM bookmark\n            WHERE user_fk = $1"
+  },
+  "c41c17dea59fc7b1731a2c83023c8d4821115486a846269db844e696b7466da8": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "review_text",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "rev_data",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "rating",
+          "ordinal": 4,
+          "type_info": "Int2"
+        },
+        {
+          "name": "release_fk",
+          "ordinal": 5,
+          "type_info": "Int4"
+        },
+        {
+          "name": "login",
+          "ordinal": 6,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "avatar",
+          "ordinal": 7,
+          "type_info": "Varchar"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int8"
+        ]
+      }
+    },
+    "query": "SELECT review.*, users.login, user_info.avatar\n            FROM review\n            INNER JOIN releases ON review.release_FK = releases.id\n            INNER JOIN users ON review.user_FK = users.id\n            INNER JOIN user_info ON review.user_FK = user_info.id\n            WHERE releases.id = $1\n            ORDER BY review.rating DESC\n            LIMIT 10\n            OFFSET $2;"
   },
   "c54e667a13dfdafdfe8a81737343fb570baa805fac32897bde1ed8b968b4a5aa": {
     "describe": {
