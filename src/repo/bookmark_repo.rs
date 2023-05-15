@@ -1,12 +1,12 @@
 use actix_web::web::Data;
 
-use crate::{models::bookmark::{Bookmark, SimpleBookmark}, AppState};
+use crate::{models::bookmark::{Bookmark, SimpleBookmark, BookmarkResponse}, AppState};
 
 impl Bookmark {
     pub async fn create_bookmark(
         bookmark: &SimpleBookmark,
         state: &Data<AppState>,
-    ) -> Result<Bookmark, sqlx::Error> {
+    ) -> Result<Option<Bookmark>, sqlx::Error> {
         let row = sqlx::query_as!(
             Bookmark,
             "INSERT INTO bookmark (user_fk, bookmark_name, release_FK)
@@ -16,15 +16,9 @@ impl Bookmark {
             bookmark.bookmark_name,
             bookmark.release_fk
         )
-        .fetch_one(&state.db)
+        .fetch_optional(&state.db)
         .await?;
-
-        Ok(Bookmark {
-            id: row.id,
-            user_fk: row.user_fk,
-            bookmark_name: row.bookmark_name,
-            release_fk: row.release_fk,
-        })
+        Ok(row)
     }
     pub async fn insert(&self, state: &Data<AppState>) -> Result<Bookmark, sqlx::Error> {
         let row = sqlx::query_as!(
@@ -64,12 +58,13 @@ impl Bookmark {
     pub async fn get_bookmarks_by_user(
         user_id: i32,
         state: &Data<AppState>,
-    ) -> Result<Vec<Bookmark>, sqlx::Error> {
+    ) -> Result<Vec<BookmarkResponse>, sqlx::Error> {
         let rows = sqlx::query_as!(
-            Bookmark,
-            "SELECT id, user_fk, bookmark_name, release_FK
-            FROM bookmark
-            WHERE user_fk = $1",
+            BookmarkResponse,
+            "SELECT b.id, b.user_fk, b.bookmark_name, b.release_FK, r.release_name, r.img, r.rating
+                FROM bookmark AS b
+                JOIN releases AS r ON b.release_FK = r.id
+                WHERE b.user_fk = $1;",
             user_id
         )
         .fetch_all(&state.db)

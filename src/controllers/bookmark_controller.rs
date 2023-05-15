@@ -1,7 +1,7 @@
 use actix_web::{
     get, post,
-    web::{Data, Query},
-    HttpResponse,
+    web::{Data, Query, self},
+    HttpResponse, dev::Path,
 };
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use serde::Deserialize;
@@ -61,3 +61,23 @@ async fn add_to_bookmarks(
         Err(e) => HttpResponse::BadRequest().body(format!("Error {}", e.to_string())),
     }
 }
+
+// #[post("/delete/{id}")]
+// async fn delete_bookmarks(
+//     id: web::Path<i32>,
+//     credentials: BearerAuth,
+//     state: Data<AppState>,
+// ) -> HttpResponse {
+//     let calims = TokenClaims::get_token_claims(credentials.token()).unwrap();
+//     let sender = get_user_by_id(calims.id, &state).await.unwrap();
+
+//     match Bookmark::get_bookmark_by_id(
+//         id.into_inner(),
+//         &state,
+//     )
+//     .await
+//     {
+//         Ok(result) => re,
+//         Err(e) => HttpResponse::BadRequest().body(format!("Error {}", e.to_string())),
+//     }
+// }

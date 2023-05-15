@@ -10,6 +10,17 @@ pub struct Bookmark {
     pub release_fk: i32,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct BookmarkResponse {
+    #[serde(skip_deserializing)]
+    pub id: i32,
+    pub user_fk: i32,
+    pub bookmark_name: String,
+    pub release_fk: i32,
+    pub release_name: String,
+    pub img: String,
+    pub rating: f32
+}
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct SimpleBookmark {
     pub user_fk: i32,
     pub bookmark_name: String,

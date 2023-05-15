@@ -460,6 +460,62 @@
     },
     "query": "INSERT INTO history (user_fk, episode, date_watched, duration)\n             VALUES ($1, $2, $3, $4) RETURNING id, user_fk, episode, date_watched, duration"
   },
+  "8b8ac001afe10054647023b7f7ca5a58ca87c637bb88cf4e5518589a4fd9a52f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "user_fk",
+          "ordinal": 1,
+          "type_info": "Int4"
+        },
+        {
+          "name": "bookmark_name",
+          "ordinal": 2,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "release_fk",
+          "ordinal": 3,
+          "type_info": "Int4"
+        },
+        {
+          "name": "release_name",
+          "ordinal": 4,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "img",
+          "ordinal": 5,
+          "type_info": "Text"
+        },
+        {
+          "name": "rating",
+          "ordinal": 6,
+          "type_info": "Float4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT b.id, b.user_fk, b.bookmark_name, b.release_FK, r.release_name, r.img, r.rating\n                FROM bookmark AS b\n                JOIN releases AS r ON b.release_FK = r.id\n                WHERE b.user_fk = $1;"
+  },
   "8c2232887630177172a9840f3cf086fb86d0b1f2e4e30c867d4d54d24f8148b5": {
     "describe": {
       "columns": [],
@@ -567,44 +623,6 @@
       }
     },
     "query": "UPDATE user_info  SET avatar = $1 WHERE id = $2\n        "
-  },
-  "c412e559175c408ddbec341386137e13acb3a2d95d900fc9bf27fdc2e1aedcbd": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Int4"
-        },
-        {
-          "name": "user_fk",
-          "ordinal": 1,
-          "type_info": "Int4"
-        },
-        {
-          "name": "bookmark_name",
-          "ordinal": 2,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "release_fk",
-          "ordinal": 3,
-          "type_info": "Int4"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Int4"
-        ]
-      }
-    },
-    "query": "SELECT id, user_fk, bookmark_name, release_FK\n            FROM bookmark\n            WHERE user_fk = $1"
   },
   "c41c17dea59fc7b1731a2c83023c8d4821115486a846269db844e696b7466da8": {
     "describe": {
