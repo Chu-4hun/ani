@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  ani_rust_server:
+    image: ani_rust_server:latest
+    container_name: ani_rust_server
+    restart: always
+    environment:
+       - DATABASE_URL=${DATABASE_URL}
+        - JWT_SECRET=${JWT_SECRET}
+        
+  pg_db:
+    image: postgres:15.1-alpine
+    container_name: pg_db
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root_pg
+      - POSTGRES_DB=ani
+    volumes:
+      - db_pg_ani:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pg_db
+
+volumes:
+  db_pg_ani:
