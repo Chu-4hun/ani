@@ -6,8 +6,8 @@ services:
     container_name: ani_rust_server
     restart: always
     environment:
-       - DATABASE_URL=${DATABASE_URL}
-        - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
         
   pg_db:
     image: postgres:15.1-alpine
