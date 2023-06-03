@@ -17,6 +17,7 @@ jwt = "0.16.0"
 hmac = "0.12.1"
 argon2 = "0.5.0"
 sha2 = "0.10.6"
+actix-cors = "0.6.4"
 
 
 [profile.dev.package.sqlx-macros]
