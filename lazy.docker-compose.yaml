@@ -1,9 +1,9 @@
 version: "3.7"
 
 services:
-  ani_rust_server:
-    image: ani_rust_server:latest
-    container_name: ani_rust_server
+  rust_ani-rust_ani:
+    image: rust_ani-rust_ani:latest
+    container_name: rust_ani
     restart: always
     environment:
       - DATABASE_URL=${DATABASE_URL}
