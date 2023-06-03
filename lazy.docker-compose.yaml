@@ -1,6 +1,15 @@
 version: "3.7"
 
 services:
+  front_flutter:
+    image: front_flutter:latest
+    ports:
+      - "80:80"
+    restart: always
+    container_name: front
+    volumes:
+      - ./.nginx:/etc/nginx/conf.d/default.conf
+
   rust_ani-rust_ani:
     image: rust_ani-rust_ani:latest
     container_name: rust_ani
@@ -8,8 +17,7 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
-    ports:
-        - '8090:8090'
+
         
   pg_db:
     image: postgres:15.1-alpine
