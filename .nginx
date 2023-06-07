@@ -10,6 +10,6 @@ server {
     }
     location ~ /kodik/* {
         rewrite ^/kodik/(.*) /$1 break;
-        proxy_pass https://kodik.cc/
+        proxy_pass https://kodik.cc;
     }
 }
