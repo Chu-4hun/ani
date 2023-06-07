@@ -8,4 +8,8 @@ server {
     location / {
         proxy_pass http://rust_ani-rust_ani:8090;
     }
+    location ~ /kodik/* {
+        rewrite ^/kodik/(.*) /$1 break;
+        proxy_pass https://kodik.cc/
+    }
 }
